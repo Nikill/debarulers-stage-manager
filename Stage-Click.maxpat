@@ -259,7 +259,7 @@
                     675,
                     96
                   ],
-                  "text": "Connecter a Ableton",
+                  "text": "Connect to Ableton",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -343,7 +343,7 @@
                     1000,
                     34
                   ],
-                  "text": "Chargement...",
+                  "text": "Loading...",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -399,7 +399,7 @@
                     225,
                     76
                   ],
-                  "text": "PRECEDENT",
+                  "text": "PREVIOUS",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -497,7 +497,7 @@
                     245,
                     76
                   ],
-                  "text": "DEMARRER / RELANCER",
+                  "text": "START / RESTART",
                   "presentation": 1,
                   "presentation_rect": [
                     512,
@@ -546,7 +546,7 @@
                     258,
                     76
                   ],
-                  "text": "SUIVANT",
+                  "text": "NEXT",
                   "presentation": 1,
                   "presentation_rect": [
                     774,
@@ -1113,7 +1113,7 @@
                     730,
                     24
                   ],
-                  "text": "Piste du clic",
+                  "text": "Click track",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -1141,7 +1141,7 @@
                     202,
                     30
                   ],
-                  "text": "ACTUALISER",
+                  "text": "REFRESH",
                   "presentation": 1,
                   "presentation_rect": [
                     830,
@@ -1190,7 +1190,7 @@
                     990,
                     25
                   ],
-                  "text": "Un clic sur un titre le lance. STOP arrete tous les clips et le transport.",
+                  "text": "Click a title to launch it. STOP stops all clips and the transport.",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -1647,7 +1647,7 @@
             450,
             34
           ],
-          "text": "Sur la piste MIDI du clic, avant le Drum Rack.",
+          "text": "On the click MIDI track, before the Drum Rack.",
           "presentation": 1,
           "presentation_rect": [
             16,
@@ -1674,7 +1674,7 @@
             450,
             54
           ],
-          "text": "OUVRIR LE PANNEAU",
+          "text": "OPEN PANEL",
           "presentation": 1,
           "presentation_rect": [
             16,

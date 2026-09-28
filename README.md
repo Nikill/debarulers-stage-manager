@@ -1,67 +1,67 @@
 # Debarulers — Stage Click, prototype v0.1
 
-Un panneau Max for Live pour piloter les scènes de votre set Ableton : nom et BPM en grand, setlist cliquable, précédent, suivant, relance et arrêt.
+A Max for Live panel for driving the scenes of your Ableton set: big song name and BPM, clickable setlist, previous, next, restart and stop.
 
-**Livré sous forme de patch source .maxpat + JavaScript. Ce n'est pas encore un .amxd compilé.** La conversion se fait dans l'éditeur Max ouvert depuis Ableton, avec les étapes ci-dessous. Cible : Live 11/12 avec Max for Live (Max 8 ou ultérieur). La logique a été vérifiée par simulation et les connexions du patch contrôlées ; le fonctionnement et le rendu dans Live/Max doivent être validés sur votre Mac.
+**Shipped as a source .maxpat patch + JavaScript. It is not a compiled .amxd yet.** The conversion happens in the Max editor opened from Ableton, following the steps below. Target: Live 11/12 with Max for Live (Max 8 or later). The logic was checked by simulation and the patch wiring verified; behaviour and rendering inside Live/Max still need to be validated on your Mac.
 
-## Installer une fois
+## One-time install
 
-1. Décompresser le dossier et le garder à un emplacement permanent, par exemple Documents/Debarulers-Stage-Click. Garder `stage_click.js` à côté du futur fichier `.amxd`.
-2. Dans votre set Ableton, déposer un **Max MIDI Effect** vide directement sur la piste MIDI qui joue le clic, **avant le Drum Rack/instrument et en dehors d'un Rack**. Le device transmet le MIDI sans le modifier. Une seule instance est nécessaire.
-3. Cliquer sur le bouton d'édition du device pour ouvrir Max. Dans Max : Fichier > Ouvrir, choisir `Stage-Click.maxpat`. Passer en mode Patching si la présentation masque les objets, déverrouiller le patch (`Cmd + E`), puis tout sélectionner et copier (`Cmd + A`, `Cmd + C`).
-4. Revenir à la fenêtre de l'effet Max MIDI vide ouvert depuis Live. Passer en mode Patching, déverrouiller, sélectionner et supprimer ses objets, puis coller le contenu copié. Le patch fourni contient déjà `midiin`, `midiout` et `live.thisdevice`.
-5. Enregistrer ce **device Max for Live** avec Enregistrer sous, sous le nom `Debarulers-Stage-Click.amxd`, **dans le même dossier que `stage_click.js`**. Fermer l'éditeur. Recharger le device sauvegardé sur la piste du clic pour initialiser l'API et la recherche du script. Ne pas se contenter de renommer le `.maxpat` en `.amxd`.
-6. Cliquer sur **OUVRIR LE PANNEAU**. Si besoin, cliquer sur ACTUALISER. La fenêtre flottante affiche le nom de la piste suivie en bas. Enregistrer le set Ableton.
+1. Unzip the folder and keep it somewhere permanent, e.g. Documents/Debarulers-Stage-Click. Keep `stage_click.js` next to the future `.amxd` file.
+2. In your Ableton set, drop an empty **Max MIDI Effect** directly on the MIDI track that plays the click, **before the Drum Rack/instrument and outside any Rack**. The device passes MIDI through unchanged. Only one instance is needed.
+3. Click the device's edit button to open Max. In Max: File > Open, pick `Stage-Click.maxpat`. Switch to Patching mode if presentation hides the objects, unlock the patch (`Cmd + E`), then select all and copy (`Cmd + A`, `Cmd + C`).
+4. Go back to the empty Max MIDI Effect window opened from Live. Switch to Patching mode, unlock, select and delete its objects, then paste. The supplied patch already contains `midiin`, `midiout` and `live.thisdevice`.
+5. Save this **Max for Live device** with Save As, as `Debarulers-Stage-Click.amxd`, **in the same folder as `stage_click.js`**. Close the editor. Reload the saved device on the click track so the API and script lookup initialise. Do not just rename the `.maxpat` to `.amxd`.
+6. Click **OPEN PANEL**. If needed, click REFRESH. The floating window shows the tracked track name at the bottom. Save the Ableton set.
 
-Après validation, il est possible de geler le device depuis Max pour embarquer ses dépendances. Tant qu'il n'est pas gelé, conserver le `.js` à côté du `.amxd` et transmettre les deux fichiers ensemble.
+Once validated, you can freeze the device from Max to embed its dependencies. Until it is frozen, keep the `.js` next to the `.amxd` and share both files together.
 
-## Préparer le set
+## Preparing the set
 
-- Conserver votre piste de clic existante et vos clips MIDI bouclés.
-- Une scène par morceau avec son nom et son BPM activé dans les réglages de scène.
-- Une scène sans clip sur la piste du clic est visible mais son lancement par le panneau est refusé.
-- Désactiver les Follow Actions des clips et scènes pour garder le passage manuel.
-- Régler les clips en mode Trigger, Loop activé et Legato désactivé pour une relance depuis le début du clip.
-- Le panneau respecte la quantification de lancement de Live et des clips. Pendant la lecture, le lancement peut attendre la prochaine mesure ; l'écran affiche EN ATTENTE. Il n'impose pas une quantification différente.
-- Ne pas armer les autres pistes ; un lancement de scène lance tous ses clips comme le bouton de scène de Live. Le device vise votre set de clic, pas une session d'enregistrement.
-- Le routage sonore reste celui du set : sélectionner la carte son et la sortie alimentant les ears. Le panneau ne génère pas le son et ne change ni les volumes ni le routage.
+- Keep your existing click track and looped MIDI clips.
+- One scene per song, with its name and its BPM enabled in the scene settings.
+- A scene with no clip on the click track is shown, but launching it from the panel is refused.
+- Disable Follow Actions on clips and scenes to keep transitions manual.
+- Set clips to Trigger mode, Loop on and Legato off so they restart from the beginning.
+- The panel respects Live's and the clips' launch quantization. During playback a launch may wait for the next bar; the screen shows PENDING. It does not impose a different quantization.
+- Do not arm other tracks; a scene launch fires all its clips, just like Live's scene button. The device targets your click set, not a recording session.
+- Audio routing stays as set up: pick the audio interface and output feeding the in-ears. The panel does not generate sound and changes neither volumes nor routing.
 
-## Utiliser
+## Usage
 
-| Commande | Résultat |
+| Control | Result |
 |---|---|
-| DÉMARRER / RELANCER | Lance la scène courante, y compris après un arrêt. |
-| SUIVANT | Lance la scène suivante en un seul appui. |
-| PRÉCÉDENT | Lance la scène précédente en un seul appui. |
-| STOP | Arrête immédiatement tous les clips de Session, annule les lancements en attente et arrête le transport global. |
-| Clic sur un titre | Lance directement cette scène. |
-| PAGE - / PAGE + | Affiche les autres titres, sans changer la lecture. |
-| ACTUALISER | Relit les scènes, ou réessaie la connexion après installation. |
+| START / RESTART | Launches the current scene, including after a stop. |
+| NEXT | Launches the next scene in a single press. |
+| PREVIOUS | Launches the previous scene in a single press. |
+| STOP | Immediately stops all Session clips, cancels pending launches and stops the global transport. |
+| Click a title | Launches that scene directly. |
+| PAGE - / PAGE + | Shows other titles without changing playback. |
+| REFRESH | Rescans scenes, or retries the connection after install. |
 
-Pour le premier morceau, cliquer sur son titre ou utiliser DÉMARRER si le bon morceau est déjà affiché. Le device ne démarre rien automatiquement lors de son chargement.
+For the first song, click its title or use START if the right song is already shown. The device never starts anything on load.
 
-Le panneau suit le `playing_slot_index` de la piste qui l'héberge : si vous lancez une scène depuis Live, son titre devient le morceau courant. À l'arrêt, il conserve le dernier morceau pour que SUIVANT fonctionne. La sélection automatique de la scène suivante dans Live ne décale donc pas le panneau.
+The panel follows the `playing_slot_index` of its host track: if you launch a scene from Live, its title becomes the current song. When stopped, it keeps the last song so NEXT still works. Live's automatic selection of the next scene therefore does not shift the panel.
 
-Aux extrémités de la liste, précédent/suivant ne rebouclent pas. Une protection de 400 ms limite les doubles appuis. Pendant un lancement en attente, un autre lancement est ignoré ; STOP permet d'annuler.
+At the ends of the list, previous/next do not wrap. A 400 ms guard limits double presses. While a launch is pending, other launches are ignored; STOP cancels it.
 
-Le BPM affiché en lecture est celui de Live ; à l'arrêt, c'est celui configuré sur la scène. GLOBAL indique que la scène n'a pas de tempo actif : elle hérite du tempo global. Réglez son tempo dans Ableton pour obtenir le BPM propre au morceau.
+The BPM shown during playback is Live's; when stopped, it is the scene's configured tempo. GLOBAL means the scene has no active tempo and inherits the global tempo. Set its tempo in Ableton to get the song's own BPM.
 
-## Validation dans Live avant utilisation en concert
+## Validation in Live before a gig
 
-1. Lancer le premier morceau : contrôler le clic et son BPM.
-2. STOP puis SUIVANT : le deuxième morceau doit partir avec son tempo, sans action supplémentaire.
-3. Tester PRÉCÉDENT, DÉMARRER et le clic direct sur un titre.
-4. Lancer un morceau directement depuis la grille de Live : le panneau doit le suivre.
-5. Vérifier STOP pendant un lancement quantifié, ainsi que les limites premier/dernier morceau.
-6. Sauvegarder, fermer et rouvrir le set : aucun clic ne doit partir à l'ouverture ; le panneau doit se reconnecter.
+1. Launch the first song: check the click and its BPM.
+2. STOP then NEXT: the second song must start at its tempo with no extra action.
+3. Test PREVIOUS, START and clicking a title directly.
+4. Launch a song directly from Live's grid: the panel must follow it.
+5. Check STOP during a quantized launch, and the first/last song limits.
+6. Save, close and reopen the set: no click must start on open; the panel must reconnect.
 
-Si le panneau reste vide, ouvrir la console Max et vérifier que `stage_click.js` a été trouvé. Si le message demande une piste MIDI, déplacer le device directement sur la piste du clic, hors Rack. Une fois le device sauvegardé au bon endroit, le retirer puis le recharger.
+If the panel stays empty, open the Max console and check that `stage_click.js` was found. If the message asks for a MIDI track, move the device directly onto the click track, outside any Rack. Once the device is saved in the right place, remove it and load it again.
 
-## Sources techniques
+## Technical references
 
-- API des scènes : https://docs.cycling74.com/apiref/lom/scene/
-- Transport et arrêt : https://docs.cycling74.com/apiref/lom/song/
-- Piste et playing_slot_index : https://docs.cycling74.com/apiref/lom/track/
-- Interfaces Max for Live : https://docs.cycling74.com/userguide/m4l/live_userinterfaces/
+- Scene API: https://docs.cycling74.com/apiref/lom/scene/
+- Transport and stop: https://docs.cycling74.com/apiref/lom/song/
+- Track and playing_slot_index: https://docs.cycling74.com/apiref/lom/track/
+- Max for Live interfaces: https://docs.cycling74.com/userguide/m4l/live_userinterfaces/
 
-Les tests fournis utilisent une API simulée. Ils ne remplacent pas la validation audio, visuelle et d'intégration dans Ableton.
+The supplied tests use a simulated API. They do not replace audio, visual and integration validation in Ableton.

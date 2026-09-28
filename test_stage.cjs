@@ -19,14 +19,14 @@ c.init();assert.equal(c.currentId,10);
 c.start();c.poll();assert.equal(model.tempo,120);assert.equal(c.pendingId,0);
 c.stop();assert.equal(model.playing,0);
 c.lastPress=0;c.next();c.poll();assert.equal(c.currentId,11);assert.equal(model.tempo,135);
-c.lastPress=0;c.next();assert.equal(c.currentId,11);assert(ui.status.includes('Aucun clip'));
+c.lastPress=0;c.next();assert.equal(c.currentId,11);assert(ui.status.includes('No click clip'));
 c.lastPress=0;c.previous();c.poll();assert.equal(c.currentId,10);
-c.lastPress=0;c.previous();assert.equal(c.currentId,10);assert(ui.status.includes('Premier'));
+c.lastPress=0;c.previous();assert.equal(c.currentId,10);assert(ui.status.includes('First'));
 // Actual playback, not selected scene, drives the current title.
 model.slot=1;model.playing=1;model.selected=10;c.poll();assert.equal(c.currentId,11);
 c.pendingId=10;c.stop();assert.equal(c.pendingId,0);assert.equal(model.playing,0);
 model.scenes[2].has=1;c.scan();c.lastPress=0;c.next();c.poll();assert.equal(c.currentId,12);
-c.lastPress=0;let count=model.calls.length;c.next();assert.equal(model.calls.length,count);assert(ui.status.includes('Fin'));
+c.lastPress=0;let count=model.calls.length;c.next();assert.equal(model.calls.length,count);assert(ui.status.includes('End'));
 // Stable scene IDs survive reordering.
 model.playing=0;model.scenes.reverse();c.scan();assert.equal(c.currentId,12);assert.equal(c.at(12),0);
 const p=JSON.parse(fs.readFileSync(__dirname+'/Stage-Click.maxpat'));
