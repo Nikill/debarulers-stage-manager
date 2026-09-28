@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="760" viewBox="0 0 1060 760" font-family="Arial, Helvetica, sans-serif" xml:space="preserve" style="white-space:pre">
+<rect width="1060" height="760" fill="rgb(14,17,22)"/>
+<text x="32" y="39.1" font-size="19" fill="rgb(115,217,189)">DEBARULERS  /  STAGE MANAGER</text>
+<text x="32" y="82.4" font-size="16" fill="rgb(232,240,247)">SONG 2 / 10</text>
+<text x="32" y="138" font-size="40" fill="rgb(232,240,247)">Stream</text>
+<text x="764" y="85.2" font-size="18" fill="rgb(115,217,189)">BPM</text>
+<text x="759" y="157.8" font-size="62" fill="rgb(232,240,247)">120</text>
+<text x="32" y="230.8" font-size="22" fill="rgb(250,184,94)">PLAYING</text>
+<text x="32" y="271.1" font-size="19" fill="rgb(232,240,247)">Next: Fantasy</text>
+<rect x="28" y="304" width="225" height="76" rx="10" fill="rgb(41,51,69)"/>
+<text x="140.5" y="342" font-size="20" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">PREVIOUS</text>
+<rect x="270" y="304" width="225" height="76" rx="10" fill="rgb(150,46,59)"/>
+<text x="382.5" y="342" font-size="26" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">STOP</text>
+<rect x="512" y="304" width="245" height="76" rx="10" fill="rgb(41,87,84)"/>
+<text x="634.5" y="342" font-size="18" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">START / RESTART</text>
+<rect x="774" y="304" width="258" height="76" rx="10" fill="rgb(31,112,92)"/>
+<text x="903" y="342" font-size="26" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">NEXT</text>
+<text x="32" y="418.5" font-size="15" fill="rgb(232,240,247)">SETLIST  /  1 of 2</text>
+<rect x="804" y="398" width="108" height="28" rx="10" fill="rgb(41,51,69)"/>
+<text x="858" y="412" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">PAGE -</text>
+<rect x="924" y="398" width="108" height="28" rx="10" fill="rgb(41,51,69)"/>
+<text x="978" y="412" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">PAGE +</text>
+<rect x="28" y="440" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="275" y="462.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   1. Intro   /   92</text>
+<rect x="28" y="493" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="275" y="515.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central"> > 2. Stream   /   120</text>
+<rect x="28" y="546" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="275" y="568.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   3. Fantasy   /   135</text>
+<rect x="28" y="599" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="275" y="621.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   4. Nightdrive   /   104</text>
+<rect x="538" y="440" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="785" y="462.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   5. Hollow   /   88</text>
+<rect x="538" y="493" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="785" y="515.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   6. Paper Kites   /   126</text>
+<rect x="538" y="546" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="785" y="568.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   7. Low Tide   /   98</text>
+<rect x="538" y="599" width="494" height="45" rx="10" fill="rgb(31,38,51)"/>
+<text x="785" y="621.5" font-size="16" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">   8. Signal   /   140</text>
+<text x="32" y="685.6" font-size="14" fill="rgb(140,161,181)">Tracking: Click</text>
+<rect x="830" y="666" width="202" height="30" rx="10" fill="rgb(41,51,69)"/>
+<text x="931" y="681" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">REFRESH</text>
+<text x="32" y="729.6" font-size="14" fill="rgb(140,161,181)">Click a title to launch it. STOP stops all clips and the transport.</text>
+</svg>

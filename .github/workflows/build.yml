@@ -1,0 +1,28 @@
+name: build
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node test_stage.cjs
+      - run: node render_ui.cjs && git diff --exit-code docs/  # preview must match the patch
+      - run: node build_amxd.cjs
+      - run: cd dist && zip ../Debarulers-Stage-Manager.zip *
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Debarulers-Stage-Manager
+          path: dist/
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Debarulers-Stage-Manager.zip

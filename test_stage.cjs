@@ -31,4 +31,7 @@ c.lastPress=0;let count=model.calls.length;c.next();assert.equal(model.calls.len
 model.playing=0;model.scenes.reverse();c.scan();assert.equal(c.currentId,12);assert.equal(c.at(12),0);
 const p=JSON.parse(fs.readFileSync(__dirname+'/Debarulers-Stage-Manager.maxpat'));
 function validate(p){const ids=new Set(p.boxes.map(b=>b.box.id));for(const l of p.lines){assert(ids.has(l.patchline.source[0]));assert(ids.has(l.patchline.destination[0]));}for(const b of p.boxes)if(b.box.patcher)validate(b.box.patcher);}
-validate(p.patcher);console.log('PASS: start, stop, next/previous, empty clip, boundaries, external launch, cancellation, reorder, patch wiring. Live/Max runtime still untested.');
+validate(p.patcher);
+const {pack,unpack}=require('./build_amxd.cjs'),amxd=pack(p),back=unpack(amxd);
+assert.equal(amxd.toString('latin1',8,12),'mmmm');assert.equal(back.patcher.project.amxdtype,0x6d6d6d6d);assert.deepEqual(back.patcher.boxes,p.patcher.boxes);
+console.log('PASS: start, stop, next/previous, empty clip, boundaries, external launch, cancellation, reorder, patch wiring, amxd packing. Live/Max runtime still untested.');

@@ -2,9 +2,21 @@
 
 A Max for Live panel for driving the scenes of your Ableton set: big song name and BPM, clickable setlist, previous, next, restart and stop.
 
-**Shipped as a source .maxpat patch + JavaScript. It is not a compiled .amxd yet.** The conversion happens in the Max editor opened from Ableton, following the steps below. Target: Live 11/12 with Max for Live (Max 8 or later). The logic was checked by simulation and the patch wiring verified; behaviour and rendering inside Live/Max still need to be validated on your Mac.
+![Stage Manager panel](docs/panel.svg)
 
-## One-time install
+*Preview drawn from the patch layout by `render_ui.cjs` (`node render_ui.cjs`), not a Max screenshot.*
+
+**A ready-made `.amxd` is built by GitHub Actions** (`build_amxd.cjs`, no Max needed): download `Debarulers-Stage-Manager.zip` from the latest Release, or the build artifact of any Actions run. Target: Live 11/12 with Max for Live (Max 8 or later). The logic was checked by simulation and the patch wiring verified; behaviour and rendering inside Live/Max still need to be validated on your Mac.
+
+## Install from a build
+
+1. Unzip `Debarulers-Stage-Manager.zip` somewhere permanent. Keep `stage_click.js` next to `Debarulers-Stage-Manager.amxd`.
+2. Drag the `.amxd` directly onto the MIDI track that plays the click, **before the Drum Rack/instrument and outside any Rack**.
+3. Click **OPEN PANEL**, then REFRESH if needed. Save the Ableton set.
+
+To build locally: `node build_amxd.cjs` writes `dist/`. Pushing a `v*` tag attaches the zip to a GitHub Release.
+
+## Manual install from the Max editor (fallback)
 
 1. Unzip the folder and keep it somewhere permanent, e.g. Documents/Debarulers-Stage-Manager. Keep `stage_click.js` next to the future `.amxd` file.
 2. In your Ableton set, drop an empty **Max MIDI Effect** directly on the MIDI track that plays the click, **before the Drum Rack/instrument and outside any Rack**. The device passes MIDI through unchanged. Only one instance is needed.
