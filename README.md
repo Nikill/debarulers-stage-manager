@@ -1,4 +1,4 @@
-# Debarulers — Stage Click, prototype v0.1
+# Debarulers Stage Manager, prototype v0.1
 
 A Max for Live panel for driving the scenes of your Ableton set: big song name and BPM, clickable setlist, previous, next, restart and stop.
 
@@ -6,11 +6,11 @@ A Max for Live panel for driving the scenes of your Ableton set: big song name a
 
 ## One-time install
 
-1. Unzip the folder and keep it somewhere permanent, e.g. Documents/Debarulers-Stage-Click. Keep `stage_click.js` next to the future `.amxd` file.
+1. Unzip the folder and keep it somewhere permanent, e.g. Documents/Debarulers-Stage-Manager. Keep `stage_click.js` next to the future `.amxd` file.
 2. In your Ableton set, drop an empty **Max MIDI Effect** directly on the MIDI track that plays the click, **before the Drum Rack/instrument and outside any Rack**. The device passes MIDI through unchanged. Only one instance is needed.
-3. Click the device's edit button to open Max. In Max: File > Open, pick `Stage-Click.maxpat`. Switch to Patching mode if presentation hides the objects, unlock the patch (`Cmd + E`), then select all and copy (`Cmd + A`, `Cmd + C`).
+3. Click the device's edit button to open Max. In Max: File > Open, pick `Debarulers-Stage-Manager.maxpat`. Switch to Patching mode if presentation hides the objects, unlock the patch (`Cmd + E`), then select all and copy (`Cmd + A`, `Cmd + C`).
 4. Go back to the empty Max MIDI Effect window opened from Live. Switch to Patching mode, unlock, select and delete its objects, then paste. The supplied patch already contains `midiin`, `midiout` and `live.thisdevice`.
-5. Save this **Max for Live device** with Save As, as `Debarulers-Stage-Click.amxd`, **in the same folder as `stage_click.js`**. Close the editor. Reload the saved device on the click track so the API and script lookup initialise. Do not just rename the `.maxpat` to `.amxd`.
+5. Save this **Max for Live device** with Save As, as `Debarulers-Stage-Manager.amxd`, **in the same folder as `stage_click.js`**. Close the editor. Reload the saved device on the click track so the API and script lookup initialise. Do not just rename the `.maxpat` to `.amxd`.
 6. Click **OPEN PANEL**. If needed, click REFRESH. The floating window shows the tracked track name at the bottom. Save the Ableton set.
 
 Once validated, you can freeze the device from Max to embed its dependencies. Until it is frozen, keep the `.js` next to the `.amxd` and share both files together.

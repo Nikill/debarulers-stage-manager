@@ -101,7 +101,7 @@
             150,
             22
           ],
-          "text": "p Stage_Click",
+          "text": "p Stage_Manager",
           "patcher": {
             "fileversion": 1,
             "appversion": {
@@ -203,7 +203,7 @@
                     670,
                     30
                   ],
-                  "text": "DEBARULERS  /  STAGE CLICK",
+                  "text": "DEBARULERS  /  STAGE MANAGER",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -1620,7 +1620,7 @@
             450,
             26
           ],
-          "text": "DEBARULERS / STAGE CLICK",
+          "text": "DEBARULERS / STAGE MANAGER",
           "presentation": 1,
           "presentation_rect": [
             16,
@@ -1810,6 +1810,6 @@
         }
       }
     ],
-    "description": "Stage click controller for Ableton Live 11/12. Source patch for a Max MIDI Effect."
+    "description": "Debarulers Stage Manager: stage controller for Ableton Live 11/12. Source patch for a Max MIDI Effect."
   }
 }

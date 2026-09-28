@@ -29,6 +29,6 @@ model.scenes[2].has=1;c.scan();c.lastPress=0;c.next();c.poll();assert.equal(c.cu
 c.lastPress=0;let count=model.calls.length;c.next();assert.equal(model.calls.length,count);assert(ui.status.includes('End'));
 // Stable scene IDs survive reordering.
 model.playing=0;model.scenes.reverse();c.scan();assert.equal(c.currentId,12);assert.equal(c.at(12),0);
-const p=JSON.parse(fs.readFileSync(__dirname+'/Stage-Click.maxpat'));
+const p=JSON.parse(fs.readFileSync(__dirname+'/Debarulers-Stage-Manager.maxpat'));
 function validate(p){const ids=new Set(p.boxes.map(b=>b.box.id));for(const l of p.lines){assert(ids.has(l.patchline.source[0]));assert(ids.has(l.patchline.destination[0]));}for(const b of p.boxes)if(b.box.patcher)validate(b.box.patcher);}
 validate(p.patcher);console.log('PASS: start, stop, next/previous, empty clip, boundaries, external launch, cancellation, reorder, patch wiring. Live/Max runtime still untested.');
