@@ -41,19 +41,6 @@
       },
       {
         "box": {
-          "id": "mo",
-          "maxclass": "newobj",
-          "patching_rect": [
-            30,
-            330,
-            55,
-            22
-          ],
-          "text": "midiout"
-        }
-      },
-      {
-        "box": {
           "id": "live",
           "maxclass": "newobj",
           "patching_rect": [
@@ -116,7 +103,7 @@
               100,
               100,
               1060,
-              760
+              810
             ],
             "openinpresentation": 1,
             "default_fontsize": 14.0,
@@ -139,7 +126,11 @@
                     180,
                     22
                   ],
-                  "text": "js stage_click.js"
+                  "text": "js stage_click.js",
+                  "saved_object_attributes": {
+                    "filename": "stage_click.js",
+                    "parameter_enable": 0
+                  }
                 }
               },
               {
@@ -177,7 +168,7 @@
                     600,
                     22
                   ],
-                  "text": "window size 80 80 1140 840, window flags float, window exec, presentation 1"
+                  "text": "window size 80 80 1140 890, window flags float, window exec, presentation 1"
                 }
               },
               {
@@ -1190,7 +1181,7 @@
                     990,
                     25
                   ],
-                  "text": "Click a title to launch it. STOP stops all clips and the transport.",
+                  "text": "Type a name and BPM: ADD SONG appends a scene with a 1-bar click clip, UPDATE CURRENT renames/retempos the shown song.",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -1206,6 +1197,244 @@
                     0.71,
                     1
                   ]
+                }
+              },
+              {
+                "box": {
+                  "id": "edlabel",
+                  "maxclass": "comment",
+                  "patching_rect": [
+                    28,
+                    759,
+                    110,
+                    25
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    28,
+                    759,
+                    110,
+                    25
+                  ],
+                  "varname": "edlabel",
+                  "text": "NEW SONG",
+                  "fontsize": 14.0,
+                  "textcolor": [
+                    0.55,
+                    0.63,
+                    0.71,
+                    1
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "newname",
+                  "maxclass": "textedit",
+                  "patching_rect": [
+                    140,
+                    752,
+                    420,
+                    38
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    140,
+                    752,
+                    420,
+                    38
+                  ],
+                  "varname": "newname",
+                  "text": "",
+                  "tag": "text",
+                  "keymode": 1,
+                  "lines": 1,
+                  "fontsize": 18.0,
+                  "bgcolor": [
+                    0.11,
+                    0.13,
+                    0.17,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "newbpm",
+                  "maxclass": "flonum",
+                  "patching_rect": [
+                    575,
+                    752,
+                    110,
+                    38
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    575,
+                    752,
+                    110,
+                    38
+                  ],
+                  "varname": "newbpm",
+                  "minimum": 20,
+                  "maximum": 999,
+                  "format": 6,
+                  "fontsize": 18.0,
+                  "bgcolor": [
+                    0.11,
+                    0.13,
+                    0.17,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "add",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    700,
+                    752,
+                    160,
+                    38
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    700,
+                    752,
+                    160,
+                    38
+                  ],
+                  "varname": "add",
+                  "text": "ADD SONG",
+                  "mode": 0,
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.16,
+                    0.2,
+                    0.27,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0
+                }
+              },
+              {
+                "box": {
+                  "id": "update",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    872,
+                    752,
+                    160,
+                    38
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    872,
+                    752,
+                    160,
+                    38
+                  ],
+                  "varname": "update",
+                  "text": "UPDATE CURRENT",
+                  "mode": 0,
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.16,
+                    0.2,
+                    0.27,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0
+                }
+              },
+              {
+                "box": {
+                  "id": "addtrig",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1100,
+                    1110,
+                    150,
+                    22
+                  ],
+                  "text": "t b b b"
+                }
+              },
+              {
+                "box": {
+                  "id": "addcmd",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    1100,
+                    1140,
+                    150,
+                    22
+                  ],
+                  "text": "add"
+                }
+              },
+              {
+                "box": {
+                  "id": "updtrig",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1100,
+                    1170,
+                    150,
+                    22
+                  ],
+                  "text": "t b b b"
+                }
+              },
+              {
+                "box": {
+                  "id": "updcmd",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    1100,
+                    1200,
+                    150,
+                    22
+                  ],
+                  "text": "update"
+                }
+              },
+              {
+                "box": {
+                  "id": "bpmpre",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1100,
+                    1230,
+                    150,
+                    22
+                  ],
+                  "text": "prepend bpm"
                 }
               }
             ],
@@ -1605,6 +1834,162 @@
                     0
                   ]
                 }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "add",
+                    0
+                  ],
+                  "destination": [
+                    "addtrig",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "addtrig",
+                    2
+                  ],
+                  "destination": [
+                    "newname",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "addtrig",
+                    1
+                  ],
+                  "destination": [
+                    "newbpm",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "addtrig",
+                    0
+                  ],
+                  "destination": [
+                    "addcmd",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "addcmd",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "update",
+                    0
+                  ],
+                  "destination": [
+                    "updtrig",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "updtrig",
+                    2
+                  ],
+                  "destination": [
+                    "newname",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "updtrig",
+                    1
+                  ],
+                  "destination": [
+                    "newbpm",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "updtrig",
+                    0
+                  ],
+                  "destination": [
+                    "updcmd",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "updcmd",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "newname",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "newbpm",
+                    0
+                  ],
+                  "destination": [
+                    "bpmpre",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "bpmpre",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
               }
             ]
           }
@@ -1647,7 +2032,7 @@
             450,
             34
           ],
-          "text": "On the click MIDI track, before the Drum Rack.",
+          "text": "Instrument of the click MIDI track: C1 = accent, other notes = beat.",
           "presentation": 1,
           "presentation_rect": [
             16,
@@ -1722,21 +2107,269 @@
           ],
           "text": "pcontrol"
         }
+      },
+      {
+        "box": {
+          "id": "mparse",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            460,
+            220,
+            22
+          ],
+          "text": "midiparse"
+        }
+      },
+      {
+        "box": {
+          "id": "strip",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            490,
+            220,
+            22
+          ],
+          "text": "stripnote"
+        }
+      },
+      {
+        "box": {
+          "id": "sel36",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            520,
+            220,
+            22
+          ],
+          "text": "sel 36"
+        }
+      },
+      {
+        "box": {
+          "id": "out",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            710,
+            200,
+            22
+          ],
+          "text": "plugout~"
+        }
+      },
+      {
+        "box": {
+          "id": "trigA",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            550,
+            200,
+            22
+          ],
+          "text": "t b b"
+        }
+      },
+      {
+        "box": {
+          "id": "envA",
+          "maxclass": "message",
+          "patching_rect": [
+            30,
+            580,
+            50,
+            22
+          ],
+          "text": "1, 0 60"
+        }
+      },
+      {
+        "box": {
+          "id": "phA",
+          "maxclass": "message",
+          "patching_rect": [
+            100,
+            580,
+            50,
+            22
+          ],
+          "text": "0"
+        }
+      },
+      {
+        "box": {
+          "id": "lineA",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            610,
+            200,
+            22
+          ],
+          "text": "line~"
+        }
+      },
+      {
+        "box": {
+          "id": "shapeA",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            640,
+            200,
+            22
+          ],
+          "text": "*~"
+        }
+      },
+      {
+        "box": {
+          "id": "oscA",
+          "maxclass": "newobj",
+          "patching_rect": [
+            180,
+            640,
+            200,
+            22
+          ],
+          "text": "cycle~ 1760"
+        }
+      },
+      {
+        "box": {
+          "id": "ampA",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            670,
+            200,
+            22
+          ],
+          "text": "*~"
+        }
+      },
+      {
+        "box": {
+          "id": "trigB",
+          "maxclass": "newobj",
+          "patching_rect": [
+            330,
+            550,
+            200,
+            22
+          ],
+          "text": "t b b"
+        }
+      },
+      {
+        "box": {
+          "id": "envB",
+          "maxclass": "message",
+          "patching_rect": [
+            330,
+            580,
+            50,
+            22
+          ],
+          "text": "1, 0 60"
+        }
+      },
+      {
+        "box": {
+          "id": "phB",
+          "maxclass": "message",
+          "patching_rect": [
+            400,
+            580,
+            50,
+            22
+          ],
+          "text": "0"
+        }
+      },
+      {
+        "box": {
+          "id": "lineB",
+          "maxclass": "newobj",
+          "patching_rect": [
+            330,
+            610,
+            200,
+            22
+          ],
+          "text": "line~"
+        }
+      },
+      {
+        "box": {
+          "id": "shapeB",
+          "maxclass": "newobj",
+          "patching_rect": [
+            330,
+            640,
+            200,
+            22
+          ],
+          "text": "*~"
+        }
+      },
+      {
+        "box": {
+          "id": "oscB",
+          "maxclass": "newobj",
+          "patching_rect": [
+            480,
+            640,
+            200,
+            22
+          ],
+          "text": "cycle~ 1320"
+        }
+      },
+      {
+        "box": {
+          "id": "ampB",
+          "maxclass": "newobj",
+          "patching_rect": [
+            330,
+            670,
+            200,
+            22
+          ],
+          "text": "*~"
+        }
+      },
+      {
+        "box": {
+          "id": "sqA",
+          "maxclass": "newobj",
+          "patching_rect": [
+            90,
+            640,
+            40,
+            22
+          ],
+          "text": "*~"
+        }
+      },
+      {
+        "box": {
+          "id": "sqB",
+          "maxclass": "newobj",
+          "patching_rect": [
+            390,
+            640,
+            40,
+            22
+          ],
+          "text": "*~"
+        }
       }
     ],
     "lines": [
-      {
-        "patchline": {
-          "source": [
-            "mi",
-            0
-          ],
-          "destination": [
-            "mo",
-            0
-          ]
-        }
-      },
       {
         "patchline": {
           "source": [
@@ -1806,6 +2439,354 @@
           "destination": [
             "stage",
             0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "mi",
+            0
+          ],
+          "destination": [
+            "mparse",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "mparse",
+            0
+          ],
+          "destination": [
+            "strip",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "strip",
+            0
+          ],
+          "destination": [
+            "sel36",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "sel36",
+            0
+          ],
+          "destination": [
+            "trigA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "trigA",
+            1
+          ],
+          "destination": [
+            "phA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "trigA",
+            0
+          ],
+          "destination": [
+            "envA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "phA",
+            0
+          ],
+          "destination": [
+            "oscA",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "envA",
+            0
+          ],
+          "destination": [
+            "lineA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "oscA",
+            0
+          ],
+          "destination": [
+            "ampA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ampA",
+            0
+          ],
+          "destination": [
+            "out",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ampA",
+            0
+          ],
+          "destination": [
+            "out",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "sel36",
+            1
+          ],
+          "destination": [
+            "trigB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "trigB",
+            1
+          ],
+          "destination": [
+            "phB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "trigB",
+            0
+          ],
+          "destination": [
+            "envB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "phB",
+            0
+          ],
+          "destination": [
+            "oscB",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "envB",
+            0
+          ],
+          "destination": [
+            "lineB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "oscB",
+            0
+          ],
+          "destination": [
+            "ampB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ampB",
+            0
+          ],
+          "destination": [
+            "out",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ampB",
+            0
+          ],
+          "destination": [
+            "out",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "lineA",
+            0
+          ],
+          "destination": [
+            "shapeA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "lineA",
+            0
+          ],
+          "destination": [
+            "shapeA",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "shapeA",
+            0
+          ],
+          "destination": [
+            "sqA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "shapeA",
+            0
+          ],
+          "destination": [
+            "sqA",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "sqA",
+            0
+          ],
+          "destination": [
+            "ampA",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "lineB",
+            0
+          ],
+          "destination": [
+            "shapeB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "lineB",
+            0
+          ],
+          "destination": [
+            "shapeB",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "shapeB",
+            0
+          ],
+          "destination": [
+            "sqB",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "shapeB",
+            0
+          ],
+          "destination": [
+            "sqB",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "sqB",
+            0
+          ],
+          "destination": [
+            "ampB",
+            1
           ]
         }
       }

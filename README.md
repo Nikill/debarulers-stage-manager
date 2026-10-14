@@ -1,42 +1,55 @@
 # Debarulers Stage Manager, prototype v0.1
 
-A Max for Live panel for driving the scenes of your Ableton set: big song name and BPM, clickable setlist, previous, next, restart and stop.
+A Max for Live panel for driving the scenes of your Ableton set: big song name and BPM, clickable setlist, previous, next, restart and stop, plus a setlist editor (song name + BPM) and a built-in Pro Tools-style click.
 
 ![Stage Manager panel](docs/panel.svg)
 
 *Preview drawn from the patch layout by `render_ui.cjs` (`node render_ui.cjs`), not a Max screenshot.*
 
-**A ready-made `.amxd` is built by GitHub Actions** (`build_amxd.cjs`, no Max needed): download `Debarulers-Stage-Manager.zip` from the latest Release, or the build artifact of any Actions run. Target: Live 11/12 with Max for Live (Max 8 or later). The logic was checked by simulation and the patch wiring verified; behaviour and rendering inside Live/Max still need to be validated on your Mac.
+**A ready-made `.amxd` is built by GitHub Actions** (`build_amxd.cjs`, no Max needed): download `Debarulers-Stage-Manager.zip` from the latest Release, or the build artifact of any Actions run. The `.amxd` is frozen: it is the only file you need. Target: Live 11/12 with Max for Live (Max 8 or later). The logic was checked by simulation and the patch wiring verified; behaviour and rendering inside Live/Max still need to be validated on your Mac.
 
 ## Install from a build
 
-1. Unzip `Debarulers-Stage-Manager.zip` somewhere permanent. Keep `stage_click.js` next to `Debarulers-Stage-Manager.amxd`.
-2. Drag the `.amxd` directly onto the MIDI track that plays the click, **before the Drum Rack/instrument and outside any Rack**.
+1. Take `Debarulers-Stage-Manager.amxd` from the zip (or `dist/`) and put it anywhere, e.g. your User Library.
+2. Drag it onto the MIDI track that plays the click, **as its instrument, outside any Rack**. It replaces the Drum Rack: the device synthesises the click itself (C1 = accent, any other note = beat).
 3. Click **OPEN PANEL**, then REFRESH if needed. Save the Ableton set.
 
-To build locally: `node build_amxd.cjs` writes `dist/`. Pushing a `v*` tag attaches the zip to a GitHub Release.
+To build locally: `node build_amxd.cjs` writes the frozen `dist/Debarulers-Stage-Manager.amxd`, with `stage_click.js` embedded in it. Pushing a `v*` tag attaches the zip to a GitHub Release.
 
 ## Manual install from the Max editor (fallback)
 
 1. Unzip the folder and keep it somewhere permanent, e.g. Documents/Debarulers-Stage-Manager. Keep `stage_click.js` next to the future `.amxd` file.
-2. In your Ableton set, drop an empty **Max MIDI Effect** directly on the MIDI track that plays the click, **before the Drum Rack/instrument and outside any Rack**. The device passes MIDI through unchanged. Only one instance is needed.
+2. In your Ableton set, drop an empty **Max Instrument** on the MIDI track that plays the click, in place of the Drum Rack and outside any Rack. Only one instance is needed.
 3. Click the device's edit button to open Max. In Max: File > Open, pick `Debarulers-Stage-Manager.maxpat`. Switch to Patching mode if presentation hides the objects, unlock the patch (`Cmd + E`), then select all and copy (`Cmd + A`, `Cmd + C`).
-4. Go back to the empty Max MIDI Effect window opened from Live. Switch to Patching mode, unlock, select and delete its objects, then paste. The supplied patch already contains `midiin`, `midiout` and `live.thisdevice`.
+4. Go back to the empty Max Instrument window opened from Live. Switch to Patching mode, unlock, select and delete its objects, then paste. The supplied patch already contains `midiin`, `plugout~` and `live.thisdevice`.
 5. Save this **Max for Live device** with Save As, as `Debarulers-Stage-Manager.amxd`, **in the same folder as `stage_click.js`**. Close the editor. Reload the saved device on the click track so the API and script lookup initialise. Do not just rename the `.maxpat` to `.amxd`.
 6. Click **OPEN PANEL**. If needed, click REFRESH. The floating window shows the tracked track name at the bottom. Save the Ableton set.
 
 Once validated, you can freeze the device from Max to embed its dependencies. Until it is frozen, keep the `.js` next to the `.amxd` and share both files together.
 
+## Building the setlist
+
+At the bottom of the panel, type a song name and its BPM:
+
+- **ADD SONG** inserts a scene right after the last song (empty scenes stay below), named after the song, with its tempo enabled, and creates a looped one-bar 4/4 click clip on the tracked track: C1 (accent) on beat 1, C#1 on beats 2-4.
+- **UPDATE CURRENT** renames and re-tempos the song shown at the top. Its clip is left alone.
+
+Reorder or delete songs in Live (drag or delete the scene); the panel follows on its next rescan. Other time signatures: edit the clip in Live.
+
+## The click sound
+
+The device synthesises a short sine blip modelled on the Pro Tools click, so no sample file (and no Avid sound) is needed. It plays on the clips' notes: C1 = accent (1760 Hz), any other note = beat (1320 Hz), so existing click clips keep sounding. To retune, edit the `cycle~` frequency or the decay length (`1, 0 60` = 60 ms) in the top patcher in `Debarulers-Stage-Manager.maxpat`, then rebuild.
+
 ## Preparing the set
 
 - Keep your existing click track and looped MIDI clips.
 - One scene per song, with its name and its BPM enabled in the scene settings.
-- A scene with no clip on the click track is shown, but launching it from the panel is refused.
+- Only scenes with a clip on the click track are in the setlist: empty scenes (like Live's default ones) are hidden.
 - Disable Follow Actions on clips and scenes to keep transitions manual.
 - Set clips to Trigger mode, Loop on and Legato off so they restart from the beginning.
 - The panel respects Live's and the clips' launch quantization. During playback a launch may wait for the next bar; the screen shows PENDING. It does not impose a different quantization.
 - Do not arm other tracks; a scene launch fires all its clips, just like Live's scene button. The device targets your click set, not a recording session.
-- Audio routing stays as set up: pick the audio interface and output feeding the in-ears. The panel does not generate sound and changes neither volumes nor routing.
+- The click comes out of this track: route its output to the in-ears as before. The device changes neither volumes nor routing.
 
 ## Usage
 
@@ -49,6 +62,8 @@ Once validated, you can freeze the device from Max to embed its dependencies. Un
 | Click a title | Launches that scene directly. |
 | PAGE - / PAGE + | Shows other titles without changing playback. |
 | REFRESH | Rescans scenes, or retries the connection after install. |
+| ADD SONG | Creates a scene + click clip from the name and BPM fields. |
+| UPDATE CURRENT | Writes the name and BPM fields to the current song. |
 
 For the first song, click its title or use START if the right song is already shown. The device never starts anything on load.
 
@@ -67,7 +82,7 @@ The BPM shown during playback is Live's; when stopped, it is the scene's configu
 5. Check STOP during a quantized launch, and the first/last song limits.
 6. Save, close and reopen the set: no click must start on open; the panel must reconnect.
 
-If the panel stays empty, open the Max console and check that `stage_click.js` was found. If the message asks for a MIDI track, move the device directly onto the click track, outside any Rack. Once the device is saved in the right place, remove it and load it again.
+If the panel stays empty, open the Max console and look for a `js` error. If the message asks for a MIDI track, move the device directly onto the click track, outside any Rack. Once the device is saved in the right place, remove it and load it again.
 
 ## Technical references
 

@@ -7,6 +7,8 @@ var scenes = [], currentId = 0, pendingId = 0, page = 0;
 var pendingAt = 0, lastPress = 0, tick = 0, ready = false;
 var note = '', noteUntil = 0;
 var ROWS = 8;
+var newName = '', newBpm = 120;
+var ACCENT = 36, BEAT = 37; // C1 = accent, C#1 = beat (the device plays any non-C1 note as beat)
 function ui(name, text) {
     var o = this.patcher.getnamed(name);
     if (o) o.message('set', String(text));
@@ -44,9 +46,10 @@ function scan() {
         reader.id=list[i];
         var n=String(scalar(reader,'name') || ('Scene '+(i+1))), bpm=-1;
         try { bpm=Number(scalar(reader,'tempo')); } catch(e) {}
-        var has=false;
-        if(slots[i]) { reader.id=slots[i]; has=Number(scalar(reader,'has_clip'))===1; }
-        fresh.push({id:list[i],index:i,name:n,bpm:bpm,has:has});
+        // Only scenes with a clip on the click track are songs; empty scenes stay out of the setlist.
+        if(!slots[i]) continue;
+        reader.id=slots[i];
+        if(Number(scalar(reader,'has_clip'))===1) fresh.push({id:list[i],index:i,name:n,bpm:bpm});
     }
     scenes=fresh;
     if(at(currentId)<0) {
@@ -64,8 +67,9 @@ function poll() {
         if(++tick%8===0) scan();
         var playing=Number(scalar(song,'is_playing'))===1;
         var slot=Number(scalar(track,'playing_slot_index'));
-        if(playing && slot>=0 && scenes[slot]) {
-            currentId=scenes[slot].id;
+        var live=-1; for(var k=0;k<scenes.length;k++) if(scenes[k].index===slot) live=k;
+        if(playing && live>=0) {
+            currentId=scenes[live].id;
             if(currentId===pendingId) pendingId=0;
         }
         if(pendingId && Date.now()-pendingAt>15000) { pendingId=0; announce('Launch not confirmed - check the click track'); }
@@ -85,7 +89,7 @@ function render() {
     ui('page','SETLIST  /  '+(page+1)+' of '+Math.max(1,Math.ceil(scenes.length/ROWS)));
     for(var r=0;r<ROWS;r++) {
         var s=scenes[page*ROWS+r];
-        button('row'+r,s ? ((s.id===currentId?' > ':'   ')+(s.index+1)+'. '+s.name+'   /   '+bpmText(s)+(s.has?'':'  [no click]')) : '');
+        button('row'+r,s ? ((s.id===currentId?' > ':'   ')+(page*ROWS+r+1)+'. '+s.name+'   /   '+bpmText(s)) : '');
     }
     ui('trackname',ready?'Tracking: '+String(scalar(track,'name')):'');
 }
@@ -97,7 +101,6 @@ function allowed() {
 }
 function fireIndex(i) {
     if(i<0 || i>=scenes.length) { announce(i<0?'First song':'End of setlist'); return; }
-    if(!scenes[i].has) { announce('No click clip on this scene'); return; }
     try {
         reader.id=scenes[i].id;
         reader.call('fire');
@@ -119,4 +122,44 @@ function stop() {
 }
 function pageup() { page=Math.max(0,page-1); render(); }
 function pagedown() { page=Math.min(Math.max(0,Math.ceil(scenes.length/ROWS)-1),page+1); render(); }
+// Setlist editor: fields send 'text <name>' and 'bpm <n>' right before add/update.
+function text() { newName=Array.prototype.slice.call(arguments).join(' ').trim(); }
+function bpm(v) { newBpm=Number(v); }
+function entryOk() {
+    if(!ready) { announce('Click REFRESH to connect'); return false; }
+    if(!newName) { announce('Type a song name'); return false; }
+    if(!(newBpm>=20 && newBpm<=999)) { announce('BPM must be between 20 and 999'); return false; }
+    return true;
+}
+function writeScene(id) {
+    reader.id=id; reader.set('name',newName); reader.set('tempo_enabled',1); reader.set('tempo',newBpm);
+}
+function add() {
+    if(!entryOk()) return;
+    try {
+        // Insert right after the last song, so the setlist stays at the top and empty scenes below.
+        var i=scenes.length ? scenes[scenes.length-1].index+1 : 0;
+        song.call('create_scene',i);
+        writeScene(ids(song.get('scenes'))[i]);
+        // One looped 4/4 bar: accent on 1, plain beats on 2-4.
+        reader.id=ids(track.get('clip_slots'))[i];
+        reader.call('create_clip',4);
+        reader.id=ids(reader.get('clip'))[0];
+        reader.set('name',newName); reader.set('looping',1);
+        reader.call('add_new_notes',{notes:[
+            {pitch:ACCENT,start_time:0,duration:0.25,velocity:127},
+            {pitch:BEAT,start_time:1,duration:0.25,velocity:100},
+            {pitch:BEAT,start_time:2,duration:0.25,velocity:100},
+            {pitch:BEAT,start_time:3,duration:0.25,velocity:100}]});
+        scan(); page=Math.floor((scenes.length-1)/ROWS);
+        announce('Added: '+newName+' / '+newBpm+' BPM');
+    } catch(e) { announce('Add failed: '+e.message); scan(); }
+}
+function update() {
+    if(!entryOk()) return;
+    var s=scenes[at(currentId)];
+    if(!s) { announce('No current song'); return; }
+    try { writeScene(s.id); scan(); announce('Updated: '+newName+' / '+newBpm+' BPM'); }
+    catch(e) { announce('Update failed: '+e.message); }
+}
 function notifydeleted() { if(poller) poller.cancel(); ready=false; }

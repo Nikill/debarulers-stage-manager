@@ -15,6 +15,7 @@ const text={},c={LiveAPI,Task:function(){this.repeat=()=>{};this.cancel=()=>{};}
  patcher:{getnamed:n=>({message:(k,v)=>text[n]=v})}};
 vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'stage_click.js'),'utf8'),c);
 c.init();c.choose(1);c.poll();
+text.newname='Paper Kites';text.newbpm='126.';
 
 const top=JSON.parse(fs.readFileSync(path.join(__dirname,'Debarulers-Stage-Manager.maxpat'),'utf8')).patcher;
 const panel=top.boxes.find(b=>b.box.patcher).box.patcher,[,,W,H]=panel.rect;
@@ -26,7 +27,10 @@ for(const {box:b} of panel.boxes) {
  const [x,y,w,h]=b.presentation_rect,t=esc(b.varname in text?text[b.varname]:b.text||''),f=b.fontsize||panel.default_fontsize,col=rgb(b.textcolor||[1,1,1,1]);
  if(b.maxclass==='textbutton') out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${b.rounded||0}" fill="${rgb(b.bgcolor)}"/>`,
   `<text x="${x+w/2}" y="${y+h/2}" font-size="${f}" fill="${col}" text-anchor="middle" dominant-baseline="central">${t}</text>`);
- else out.push(`<text x="${x+4}" y="${y+4+f*0.9}" font-size="${f}" fill="${col}">${t}</text>`);
+ else {
+  if(b.maxclass==='textedit'||b.maxclass==='flonum') out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${rgb(b.bgcolor)}"/>`);
+  out.push(`<text x="${x+4}" y="${y+4+f*0.9}" font-size="${f}" fill="${col}">${t}</text>`);
+ }
 }
 fs.mkdirSync(path.join(__dirname,'docs'),{recursive:true});
 fs.writeFileSync(path.join(__dirname,'docs','panel.svg'),out.join('\n')+'\n</svg>\n');
