@@ -32,7 +32,9 @@ Once validated, you can freeze the device from Max to embed its dependencies. Un
 At the bottom of the panel, type a song name and its BPM:
 
 - **ADD SONG** inserts a scene right after the last song (empty scenes stay below), named after the song, with its tempo enabled, and creates a looped one-bar 4/4 click clip on the tracked track: C1 (accent) on beat 1, C#1 on beats 2-4.
-- **UPDATE CURRENT** renames and re-tempos the song shown at the top. Its clip is left alone.
+- **ACCENT ON / NO ACCENT** picks, per song, whether beat 1 is accented. ADD SONG and UPDATE CURRENT write it into the song's clip: the first beat of every 4/4 bar becomes C1 (accent) or C#1 (plain). Other notes are left alone.
+- **UPDATE CURRENT** renames, re-tempos and re-accents the song shown at the top.
+- **ACCENT 1** on the device face (next to OPEN PANEL) is the global switch, saved with the set: off, every song plays without accent whatever its clip says.
 
 Reorder or delete songs in Live (drag or delete the scene); the panel follows on its next rescan. Other time signatures: edit the clip in Live.
 
@@ -63,7 +65,9 @@ The device synthesises a short sine blip modelled on the Pro Tools click, so no 
 | PAGE - / PAGE + | Shows other titles without changing playback. |
 | REFRESH | Rescans scenes, or retries the connection after install. |
 | ADD SONG | Creates a scene + click clip from the name and BPM fields. |
-| UPDATE CURRENT | Writes the name and BPM fields to the current song. |
+| ACCENT ON / NO ACCENT | Per-song accent used by ADD SONG and UPDATE CURRENT. |
+| UPDATE CURRENT | Writes the name, BPM and accent fields to the current song. |
+| ACCENT 1 (device face) | Global accent on/off for every song. |
 
 For the first song, click its title or use START if the right song is already shown. The device never starts anything on load.
 

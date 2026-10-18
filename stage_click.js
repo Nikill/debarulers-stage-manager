@@ -7,7 +7,7 @@ var scenes = [], currentId = 0, pendingId = 0, page = 0;
 var pendingAt = 0, lastPress = 0, tick = 0, ready = false;
 var note = '', noteUntil = 0;
 var ROWS = 8;
-var newName = '', newBpm = 120;
+var newName = '', newBpm = 120, newAccent = true;
 var ACCENT = 36, BEAT = 37; // C1 = accent, C#1 = beat (the device plays any non-C1 note as beat)
 function ui(name, text) {
     var o = this.patcher.getnamed(name);
@@ -125,6 +125,7 @@ function pagedown() { page=Math.min(Math.max(0,Math.ceil(scenes.length/ROWS)-1),
 // Setlist editor: fields send 'text <name>' and 'bpm <n>' right before add/update.
 function text() { newName=Array.prototype.slice.call(arguments).join(' ').trim(); }
 function bpm(v) { newBpm=Number(v); }
+function noaccent(v) { newAccent=!Number(v); }
 function entryOk() {
     if(!ready) { announce('Click REFRESH to connect'); return false; }
     if(!newName) { announce('Type a song name'); return false; }
@@ -141,25 +142,40 @@ function add() {
         var i=scenes.length ? scenes[scenes.length-1].index+1 : 0;
         song.call('create_scene',i);
         writeScene(ids(song.get('scenes'))[i]);
-        // One looped 4/4 bar: accent on 1, plain beats on 2-4.
+        // One looped 4/4 bar: plain beats on 2-4, beat 1 set by downbeats().
         reader.id=ids(track.get('clip_slots'))[i];
         reader.call('create_clip',4);
         reader.id=ids(reader.get('clip'))[0];
         reader.set('name',newName); reader.set('looping',1);
         reader.call('add_new_notes',{notes:[
-            {pitch:ACCENT,start_time:0,duration:0.25,velocity:127},
             {pitch:BEAT,start_time:1,duration:0.25,velocity:100},
             {pitch:BEAT,start_time:2,duration:0.25,velocity:100},
             {pitch:BEAT,start_time:3,duration:0.25,velocity:100}]});
+        downbeats(reader.id);
         scan(); page=Math.floor((scenes.length-1)/ROWS);
-        announce('Added: '+newName+' / '+newBpm+' BPM');
+        announce('Added: '+newName+' / '+newBpm+' BPM'+(newAccent?'':' / no accent'));
     } catch(e) { announce('Add failed: '+e.message); scan(); }
+}
+// Rewrites the click note on beat 1 of every 4/4 bar: C1 (accent) or C#1 (plain). Other notes are left alone.
+function downbeats(clipId) {
+    reader.id=clipId;
+    var notes=[], len=Number(scalar(reader,'length'));
+    for(var b=0;b<len;b+=4) {
+        reader.call('remove_notes_extended',ACCENT,2,b,0.01);
+        notes.push({pitch:newAccent?ACCENT:BEAT,start_time:b,duration:0.25,velocity:newAccent?127:100});
+    }
+    reader.call('add_new_notes',{notes:notes});
 }
 function update() {
     if(!entryOk()) return;
     var s=scenes[at(currentId)];
     if(!s) { announce('No current song'); return; }
-    try { writeScene(s.id); scan(); announce('Updated: '+newName+' / '+newBpm+' BPM'); }
+    try {
+        writeScene(s.id);
+        reader.id=ids(track.get('clip_slots'))[s.index];
+        downbeats(ids(reader.get('clip'))[0]);
+        scan(); announce('Updated: '+newName+' / '+newBpm+' BPM'+(newAccent?'':' / no accent'));
+    }
     catch(e) { announce('Update failed: '+e.message); }
 }
 function notifydeleted() { if(poller) poller.cancel(); ready=false; }

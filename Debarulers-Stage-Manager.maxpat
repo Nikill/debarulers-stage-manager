@@ -1181,7 +1181,7 @@
                     990,
                     25
                   ],
-                  "text": "Type a name and BPM: ADD SONG appends a scene with a 1-bar click clip, UPDATE CURRENT renames/retempos the shown song.",
+                  "text": "Type a name and BPM, pick the accent: ADD SONG appends a song with a 1-bar click clip, UPDATE CURRENT rewrites the shown song.",
                   "presentation": 1,
                   "presentation_rect": [
                     28,
@@ -1234,14 +1234,14 @@
                   "patching_rect": [
                     140,
                     752,
-                    420,
+                    310,
                     38
                   ],
                   "presentation": 1,
                   "presentation_rect": [
                     140,
                     752,
-                    420,
+                    310,
                     38
                   ],
                   "varname": "newname",
@@ -1269,16 +1269,16 @@
                   "id": "newbpm",
                   "maxclass": "flonum",
                   "patching_rect": [
-                    575,
+                    460,
                     752,
-                    110,
+                    100,
                     38
                   ],
                   "presentation": 1,
                   "presentation_rect": [
-                    575,
+                    460,
                     752,
-                    110,
+                    100,
                     38
                   ],
                   "varname": "newbpm",
@@ -1435,6 +1435,68 @@
                     22
                   ],
                   "text": "prepend bpm"
+                }
+              },
+              {
+                "box": {
+                  "id": "accent",
+                  "maxclass": "textbutton",
+                  "patching_rect": [
+                    570,
+                    752,
+                    120,
+                    38
+                  ],
+                  "presentation": 1,
+                  "presentation_rect": [
+                    570,
+                    752,
+                    120,
+                    38
+                  ],
+                  "varname": "accent",
+                  "mode": 1,
+                  "text": "ACCENT ON",
+                  "texton": "NO ACCENT",
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.16,
+                    0.2,
+                    0.27,
+                    1
+                  ],
+                  "bgoncolor": [
+                    0.35,
+                    0.2,
+                    0.2,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "textoncolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0
+                }
+              },
+              {
+                "box": {
+                  "id": "accentpre",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1100,
+                    1260,
+                    150,
+                    22
+                  ],
+                  "text": "prepend noaccent"
                 }
               }
             ],
@@ -1990,6 +2052,30 @@
                     0
                   ]
                 }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "accent",
+                    0
+                  ],
+                  "destination": [
+                    "accentpre",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "accentpre",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
               }
             ]
           }
@@ -2056,7 +2142,7 @@
           "patching_rect": [
             16,
             89,
-            450,
+            330,
             54
           ],
           "text": "OPEN PANEL",
@@ -2064,7 +2150,7 @@
           "presentation_rect": [
             16,
             89,
-            450,
+            330,
             54
           ],
           "fontsize": 22.0,
@@ -2367,6 +2453,96 @@
           ],
           "text": "*~"
         }
+      },
+      {
+        "box": {
+          "id": "accentlabel",
+          "maxclass": "comment",
+          "patching_rect": [
+            356,
+            89,
+            110,
+            20
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            356,
+            89,
+            110,
+            20
+          ],
+          "text": "ACCENT 1",
+          "fontsize": 12.0,
+          "textcolor": [
+            0.55,
+            0.63,
+            0.71,
+            1
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "gaccent",
+          "maxclass": "live.toggle",
+          "patching_rect": [
+            356,
+            112,
+            30,
+            30
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            356,
+            112,
+            30,
+            30
+          ],
+          "varname": "Accent",
+          "parameter_enable": 1,
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_longname": "Accent",
+              "parameter_shortname": "Accent",
+              "parameter_type": 2,
+              "parameter_mmax": 1,
+              "parameter_enum": [
+                "off",
+                "on"
+              ],
+              "parameter_initial": [
+                1
+              ],
+              "parameter_initial_enable": 1
+            }
+          }
+        }
+      },
+      {
+        "box": {
+          "id": "gsel",
+          "maxclass": "newobj",
+          "patching_rect": [
+            260,
+            520,
+            50,
+            22
+          ],
+          "text": "!- 2"
+        }
+      },
+      {
+        "box": {
+          "id": "ggate",
+          "maxclass": "newobj",
+          "patching_rect": [
+            30,
+            520,
+            60,
+            22
+          ],
+          "text": "gate 2 1"
+        }
       }
     ],
     "lines": [
@@ -2481,18 +2657,6 @@
       {
         "patchline": {
           "source": [
-            "sel36",
-            0
-          ],
-          "destination": [
-            "trigA",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
             "trigA",
             1
           ],
@@ -2787,6 +2951,66 @@
           "destination": [
             "ampB",
             1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "gaccent",
+            0
+          ],
+          "destination": [
+            "gsel",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "gsel",
+            0
+          ],
+          "destination": [
+            "ggate",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "sel36",
+            0
+          ],
+          "destination": [
+            "ggate",
+            1
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ggate",
+            0
+          ],
+          "destination": [
+            "trigA",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "ggate",
+            1
+          ],
+          "destination": [
+            "trigB",
+            0
           ]
         }
       }
