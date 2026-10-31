@@ -1101,7 +1101,7 @@
                   "patching_rect": [
                     28,
                     669,
-                    730,
+                    290,
                     24
                   ],
                   "text": "Click track",
@@ -1109,7 +1109,7 @@
                   "presentation_rect": [
                     28,
                     669,
-                    730,
+                    290,
                     24
                   ],
                   "varname": "trackname",
@@ -1497,6 +1497,215 @@
                     22
                   ],
                   "text": "prepend noaccent"
+                }
+              },
+              {
+                "box": {
+                  "maxclass": "textbutton",
+                  "presentation": 1,
+                  "mode": 1,
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.16,
+                    0.2,
+                    0.27,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0,
+                  "id": "editmode",
+                  "text": "EDIT SETLIST",
+                  "patching_rect": [
+                    330,
+                    666,
+                    150,
+                    30
+                  ],
+                  "presentation_rect": [
+                    330,
+                    666,
+                    150,
+                    30
+                  ],
+                  "varname": "editmode",
+                  "texton": "EDIT ON",
+                  "bgoncolor": [
+                    0.2,
+                    0.33,
+                    0.45,
+                    1
+                  ],
+                  "textoncolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ]
+                }
+              },
+              {
+                "box": {
+                  "id": "editpre",
+                  "maxclass": "newobj",
+                  "patching_rect": [
+                    1100,
+                    1290,
+                    150,
+                    22
+                  ],
+                  "text": "prepend editmode"
+                }
+              },
+              {
+                "box": {
+                  "maxclass": "textbutton",
+                  "presentation": 1,
+                  "mode": 0,
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.16,
+                    0.2,
+                    0.27,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0,
+                  "id": "moveup",
+                  "text": "MOVE UP",
+                  "patching_rect": [
+                    490,
+                    666,
+                    105,
+                    30
+                  ],
+                  "presentation_rect": [
+                    490,
+                    666,
+                    105,
+                    30
+                  ],
+                  "varname": "moveup"
+                }
+              },
+              {
+                "box": {
+                  "id": "moveupcmd",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    1100,
+                    1320,
+                    150,
+                    22
+                  ],
+                  "text": "moveup"
+                }
+              },
+              {
+                "box": {
+                  "maxclass": "textbutton",
+                  "presentation": 1,
+                  "mode": 0,
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.16,
+                    0.2,
+                    0.27,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0,
+                  "id": "movedown",
+                  "text": "MOVE DOWN",
+                  "patching_rect": [
+                    603,
+                    666,
+                    110,
+                    30
+                  ],
+                  "presentation_rect": [
+                    603,
+                    666,
+                    110,
+                    30
+                  ],
+                  "varname": "movedown"
+                }
+              },
+              {
+                "box": {
+                  "id": "movedowncmd",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    1100,
+                    1350,
+                    150,
+                    22
+                  ],
+                  "text": "movedown"
+                }
+              },
+              {
+                "box": {
+                  "maxclass": "textbutton",
+                  "presentation": 1,
+                  "mode": 0,
+                  "fontsize": 13.0,
+                  "bgcolor": [
+                    0.35,
+                    0.2,
+                    0.2,
+                    1
+                  ],
+                  "textcolor": [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "rounded": 10.0,
+                  "id": "delete",
+                  "text": "DELETE",
+                  "patching_rect": [
+                    721,
+                    666,
+                    100,
+                    30
+                  ],
+                  "presentation_rect": [
+                    721,
+                    666,
+                    100,
+                    30
+                  ],
+                  "varname": "delete"
+                }
+              },
+              {
+                "box": {
+                  "id": "deletecmd",
+                  "maxclass": "message",
+                  "patching_rect": [
+                    1100,
+                    1380,
+                    150,
+                    22
+                  ],
+                  "text": "remove"
                 }
               }
             ],
@@ -2069,6 +2278,102 @@
                 "patchline": {
                   "source": [
                     "accentpre",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "editmode",
+                    0
+                  ],
+                  "destination": [
+                    "editpre",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "editpre",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "moveup",
+                    0
+                  ],
+                  "destination": [
+                    "moveupcmd",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "moveupcmd",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "movedown",
+                    0
+                  ],
+                  "destination": [
+                    "movedowncmd",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "movedowncmd",
+                    0
+                  ],
+                  "destination": [
+                    "js",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "delete",
+                    0
+                  ],
+                  "destination": [
+                    "deletecmd",
+                    0
+                  ]
+                }
+              },
+              {
+                "patchline": {
+                  "source": [
+                    "deletecmd",
                     0
                   ],
                   "destination": [

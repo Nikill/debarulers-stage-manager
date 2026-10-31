@@ -48,6 +48,47 @@ c.text('Renamed');c.bpm(99);c.update();assert.equal(model.scenes[0].name,'Rename
 c.noaccent(1);c.text('Flat');c.bpm(90);c.add();const flat=model.clips[4];assert.deepEqual(beats(flat),[[37,0],[37,1],[37,2],[37,3]]);assert(ui.status.includes('no accent'));
 flat.length=8;flat.notes.push({pitch:37,start_time:4},{pitch:37,start_time:5});c.currentId=model.scenes[4].id;c.noaccent(0);c.update();
 assert.deepEqual(beats(flat),[[37,1],[37,2],[37,3],[37,5],[36,0],[36,4]].sort((a,b)=>a[1]-b[1]));
+// Edit mode on a two-track set (click track 2 + backing track 5). Clip slot id = 10000 + track*100 + scene index.
+const sc=(id,name,bpm)=>({id,name,tempo:bpm,tempo_enabled:1,color:id});
+let m={scenes:[sc(40,'A',120),sc(41,'B',135),sc(42,'Gap',100),sc(43,'D',90)],clips:{2:['a','b',null,'d'],5:['A','B','x',null]},playing:0,slot:-1,next:50,calls:[]};
+const TR=[2,5],slotOf=id=>({t:TR[Math.floor((id-10000)/100)],i:(id-10000)%100});
+class API2 {
+ constructor(cb,path){this.id=path==='live_set'?1:path==='this_device canonical_parent'?2:3;this.type=path==='this_device canonical_parent'?'Track':'Song';}
+ get(prop){const s=m.scenes.find(s=>s.id===this.id);
+  if(prop==='scenes')return m.scenes.flatMap(s=>['id',s.id]);
+  if(prop==='tracks')return TR.flatMap(t=>['id',t]);
+  if(prop==='clip_slots')return m.scenes.flatMap((s,i)=>['id',10000+TR.indexOf(this.id)*100+i]);
+  if(prop==='has_clip'){const o=slotOf(this.id);return [m.clips[o.t][o.i]?1:0];}
+  if(s)return [s[prop]];
+  if(prop==='selected_scene')return ['id',40];if(prop==='is_playing')return [m.playing];if(prop==='playing_slot_index')return [m.slot];
+  if(prop==='name')return ['CLIC'];if(prop==='tempo')return [120];throw new Error(prop);}
+ set(prop,v){m.scenes.find(s=>s.id===this.id)[prop]=v;}
+ call(fn,...a){m.calls.push(fn);
+  if(fn==='create_scene'){const i=a[0]<0?m.scenes.length:a[0];m.scenes.splice(i,0,sc(m.next++,'',-1));TR.forEach(t=>m.clips[t].splice(i,0,null));}
+  if(fn==='delete_scene'){m.scenes.splice(a[0],1);TR.forEach(t=>m.clips[t].splice(a[0],1));}
+  if(fn==='duplicate_clip_to'){assert.equal(a[0],'id');const f=slotOf(this.id),t=slotOf(a[1]);m.clips[t.t][t.i]=m.clips[f.t][f.i];}
+  if(fn==='delete_clip'){const o=slotOf(this.id);m.clips[o.t][o.i]=null;}
+  if(fn==='fire'){m.playing=1;m.slot=m.scenes.findIndex(s=>s.id===this.id);}}
+}
+const ui2={},e={LiveAPI:API2,Task:function(){this.cancel=()=>{};this.repeat=()=>{};},Date,Math,Number,String,Error,patcher:{getnamed:n=>({message:(k,v)=>ui2[n]=v})}};
+vm.createContext(e);vm.runInContext(fs.readFileSync(__dirname+'/stage_click.js','utf8'),e);
+e.init();assert.deepEqual(e.scenes.map(s=>s.name),['A','B','D']);// 'Gap' has no click clip
+const names=()=>m.scenes.map(s=>s.name),row=t=>m.clips[t].join();
+e.choose(1);e.moveup();assert(ui2.status.includes('EDIT SETLIST first'));assert.deepEqual(names(),['A','B','Gap','D']);
+m.playing=1;e.editmode(1);e.moveup();assert(ui2.status.includes('Stop playback'));m.playing=0;e.pendingId=0;
+// In edit mode a title selects without launching.
+let fires=m.calls.filter(f=>f==='fire').length;e.choose(1);assert.equal(e.currentId,41);assert.equal(m.calls.filter(f=>f==='fire').length,fires);
+e.moveup();assert.deepEqual(names(),['B','A','Gap','D']);assert.equal(row(2),'b,a,,d');assert.equal(row(5),'B,A,x,');
+assert.deepEqual(m.scenes.map(s=>s.tempo),[135,120,100,90]);assert.equal(m.scenes.length,4);// temporary scene removed
+assert.equal(e.at(e.currentId),0);assert.equal(e.scenes[0].name,'B');e.moveup();assert(ui2.status.includes('Already first'));
+// Songs on both sides of an empty scene swap without touching it.
+e.choose(1);e.movedown();assert.deepEqual(names(),['B','D','Gap','A']);assert.equal(row(2),'b,d,,a');assert.equal(row(5),'B,,x,A');assert.equal(e.scenes[2].name,'A');
+e.movedown();assert(ui2.status.includes('Already last'));
+// DELETE needs a second press on the same song, then removes the scene and its clips on every track.
+e.remove();assert(ui2.status.includes('again'));assert.equal(m.scenes.length,4);e.choose(0);e.remove();assert.equal(m.scenes.length,4);
+e.choose(2);e.remove();assert.equal(m.scenes.length,4);e.remove();assert.deepEqual(names(),['B','D','Gap']);assert.equal(row(5),'B,,x');
+assert.deepEqual(e.scenes.map(s=>s.name),['B','D']);assert.equal(e.scenes[e.at(e.currentId)].name,'D');
+e.editmode(0);e.lastPress=0;e.choose(0);assert.equal(m.playing,1);// edit off: titles launch again
 const p=JSON.parse(fs.readFileSync(__dirname+'/Debarulers-Stage-Manager.maxpat'));
 function validate(p){const ids=new Set(p.boxes.map(b=>b.box.id));for(const l of p.lines){assert(ids.has(l.patchline.source[0]));assert(ids.has(l.patchline.destination[0]));}for(const b of p.boxes)if(b.box.patcher)validate(b.box.patcher);}
 validate(p.patcher);
@@ -56,7 +97,10 @@ assert(p.patcher.boxes.some(b=>b.box.text==='plugout~'));
 // Global accent switch: C1 goes through the gate, which the device-face toggle points at the accent or the plain beat.
 const wire=(x,y)=>p.patcher.lines.some(l=>l.patchline.source.join()===x&&l.patchline.destination.join()===y);
 assert(wire('sel36,0','ggate,1')&&wire('ggate,0','trigA,0')&&wire('ggate,1','trigB,0')&&wire('gaccent,0','gsel,0')&&wire('gsel,0','ggate,0'));assert(!wire('sel36,0','trigA,0'));assert(!JSON.stringify(p).match(/buffer~|sfplay~|play~/));
+const pan=p.patcher.boxes.find(b=>b.box.patcher).box.patcher,pwire=(x,y)=>pan.lines.some(l=>l.patchline.source[0]===x&&l.patchline.destination[0]===y),cmd=id=>pan.boxes.find(b=>b.box.id===id).box.text;
+assert(pwire('editmode','editpre')&&pwire('editpre','js')&&cmd('editpre')==='prepend editmode');
+for(const [b,c,t] of [['moveup','moveupcmd','moveup'],['movedown','movedowncmd','movedown'],['delete','deletecmd','remove']]) assert(pwire(b,c)&&pwire(c,'js')&&cmd(c)===t);
 const {pack,unpack,NAME}=require('./build_amxd.cjs'),js=fs.readFileSync(__dirname+'/stage_click.js'),amxd=pack(p,{'stage_click.js':js}),back=unpack(amxd);
 assert.equal(amxd.toString('latin1',8,12),'iiii');assert.deepEqual(Object.keys(back),[NAME,'stage_click.js']);assert(back['stage_click.js'].equals(js));
 const dev=JSON.parse(back[NAME].toString('utf8').replace(/\0$/,''));assert.equal(dev.patcher.project.amxdtype,0x69696969);assert.deepEqual(dev.patcher.boxes,p.patcher.boxes);
-console.log('PASS: start, stop, next/previous, empty scenes hidden, boundaries, external launch, cancellation, reorder, setlist add/update, per-song accent, click synth wiring, patch wiring, frozen amxd packing. Live/Max runtime still untested.');
+console.log('PASS: start, stop, next/previous, empty scenes hidden, boundaries, external launch, cancellation, reorder, setlist add/update, per-song accent, edit mode move/delete, click synth wiring, patch wiring, frozen amxd packing. Live/Max runtime still untested.');

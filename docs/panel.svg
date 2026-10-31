@@ -51,4 +51,12 @@
 <text x="952" y="771" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">UPDATE CURRENT</text>
 <rect x="570" y="752" width="120" height="38" rx="10" fill="rgb(41,51,69)"/>
 <text x="630" y="771" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">ACCENT ON</text>
+<rect x="330" y="666" width="150" height="30" rx="10" fill="rgb(41,51,69)"/>
+<text x="405" y="681" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">EDIT SETLIST</text>
+<rect x="490" y="666" width="105" height="30" rx="10" fill="rgb(41,51,69)"/>
+<text x="542.5" y="681" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">MOVE UP</text>
+<rect x="603" y="666" width="110" height="30" rx="10" fill="rgb(41,51,69)"/>
+<text x="658" y="681" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">MOVE DOWN</text>
+<rect x="721" y="666" width="100" height="30" rx="10" fill="rgb(89,51,51)"/>
+<text x="771" y="681" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">DELETE</text>
 </svg>

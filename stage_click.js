@@ -8,6 +8,7 @@ var pendingAt = 0, lastPress = 0, tick = 0, ready = false;
 var note = '', noteUntil = 0;
 var ROWS = 8;
 var newName = '', newBpm = 120, newAccent = true;
+var editMode = false, deleteId = 0, deleteAt = 0;
 var ACCENT = 36, BEAT = 37; // C1 = accent, C#1 = beat (the device plays any non-C1 note as beat)
 function ui(name, text) {
     var o = this.patcher.getnamed(name);
@@ -85,7 +86,7 @@ function render() {
     ui('bpm',playing && slot>=0 ? String(Math.round(Number(scalar(song,'tempo'))*100)/100) : bpmText(current));
     ui('position',ci>=0 ? ('SONG '+(ci+1)+' / '+scenes.length) : 'SETLIST');
     ui('nexttitle',ci>=0 && ci+1<scenes.length ? 'Next: '+scenes[ci+1].name : 'End of setlist');
-    if(Date.now()>noteUntil) ui('status',pi>=0 ? 'PENDING: '+scenes[pi].name : (playing && slot>=0?'PLAYING':'STOPPED'));
+    if(Date.now()>noteUntil) ui('status',pi>=0 ? 'PENDING: '+scenes[pi].name : (playing && slot>=0?'PLAYING':editMode?'EDIT SETLIST: click a title, then MOVE UP / MOVE DOWN / DELETE':'STOPPED'));
     ui('page','SETLIST  /  '+(page+1)+' of '+Math.max(1,Math.ceil(scenes.length/ROWS)));
     for(var r=0;r<ROWS;r++) {
         var s=scenes[page*ROWS+r];
@@ -111,7 +112,12 @@ function fireIndex(i) {
 function next() { if(allowed()) fireIndex(at(currentId)+1); }
 function previous() { if(allowed()) fireIndex(at(currentId)-1); }
 function start() { if(allowed()) fireIndex(at(currentId)); }
-function choose(r) { if(allowed()) fireIndex(page*ROWS+Number(r)); }
+function choose(r) {
+    var i=page*ROWS+Number(r);
+    // In edit mode a title is only selected, never launched.
+    if(editMode) { if(scenes[i]) { currentId=scenes[i].id; noteUntil=0; render(); } return; }
+    if(allowed()) fireIndex(i);
+}
 function stop() {
     if(!ready) return;
     try {
@@ -177,5 +183,76 @@ function update() {
         scan(); announce('Updated: '+newName+' / '+newBpm+' BPM'+(newAccent?'':' / no accent'));
     }
     catch(e) { announce('Update failed: '+e.message); }
+}
+// Setlist edit mode: MOVE UP / MOVE DOWN / DELETE act on the current song, transport stopped only.
+function editmode(v) {
+    editMode=!!Number(v); deleteId=0;
+    announce(editMode?'Edit mode: titles select instead of launch':'Edit mode off: titles launch songs');
+}
+function editOk() {
+    if(!ready) { announce('Click REFRESH to connect'); return null; }
+    if(!editMode) { announce('Turn on EDIT SETLIST first'); return null; }
+    if(pendingId || Number(scalar(song,'is_playing'))===1) { announce('Stop playback before editing the setlist'); return null; }
+    var s=scenes[at(currentId)];
+    if(!s) announce('No current song');
+    return s || null;
+}
+function moveClip(from,to) {
+    reader.id=from;
+    if(Number(scalar(reader,'has_clip'))===1) { reader.call('duplicate_clip_to','id',to); return; }
+    reader.id=to;
+    if(Number(scalar(reader,'has_clip'))===1) reader.call('delete_clip');
+}
+var SCENE_PROPS=['name','color','tempo','time_signature_numerator','time_signature_denominator','tempo_enabled','time_signature_enabled'];
+// Live has no API to move a scene: swap the two scenes' clips on every track, through a temporary last scene, then their settings.
+function swap(a,b) {
+    var tmp=ids(song.get('scenes')).length, t=new LiveAPI(null,'live_set');
+    song.call('create_scene',-1);
+    try {
+        var tracks=ids(song.get('tracks'));
+        for(var k=0;k<tracks.length;k++) {
+            t.id=tracks[k];
+            var slots=ids(t.get('clip_slots'));
+            if(slots.length<=tmp) continue;
+            moveClip(slots[a.index],slots[tmp]); moveClip(slots[b.index],slots[a.index]); moveClip(slots[tmp],slots[b.index]);
+        }
+        var va={}, vb={}, p;
+        for(p=0;p<SCENE_PROPS.length;p++) {
+            try { reader.id=a.id; va[SCENE_PROPS[p]]=scalar(reader,SCENE_PROPS[p]); reader.id=b.id; vb[SCENE_PROPS[p]]=scalar(reader,SCENE_PROPS[p]); } catch(e) {}
+        }
+        // Some properties are missing in Live 11 or refuse -1 (no tempo): skip those, the enabled flags follow.
+        for(p=0;p<SCENE_PROPS.length;p++) {
+            if(!(SCENE_PROPS[p] in va)) continue;
+            try { reader.id=a.id; reader.set(SCENE_PROPS[p],vb[SCENE_PROPS[p]]); } catch(e) {}
+            try { reader.id=b.id; reader.set(SCENE_PROPS[p],va[SCENE_PROPS[p]]); } catch(e) {}
+        }
+    } finally { song.call('delete_scene',tmp); }
+}
+function move(step) {
+    var s=editOk(); if(!s) return;
+    var i=at(s.id), j=i+step;
+    if(j<0 || j>=scenes.length) { announce(j<0?'Already first':'Already last'); return; }
+    try {
+        swap(s,scenes[j]);
+        currentId=scenes[j].id; scan(); page=Math.floor(j/ROWS); render();
+        announce('Moved: '+s.name+' to position '+(j+1));
+    } catch(e) { announce('Move failed: '+e.message); scan(); }
+}
+function moveup() { move(-1); }
+function movedown() { move(1); }
+// DELETE removes the whole scene (every track's clip in it), so it asks for a second press within 4 s.
+function remove() {
+    var s=editOk(); if(!s) return;
+    if(deleteId!==s.id || Date.now()-deleteAt>4000) {
+        deleteId=s.id; deleteAt=Date.now();
+        announce('Press DELETE again to remove '+s.name); return;
+    }
+    deleteId=0;
+    try {
+        var i=at(s.id), keep=scenes[i+1]||scenes[i-1];
+        song.call('delete_scene',s.index);
+        currentId=keep?keep.id:0; scan();
+        announce('Deleted: '+s.name);
+    } catch(e) { announce('Delete failed: '+e.message); scan(); }
 }
 function notifydeleted() { if(poller) poller.cancel(); ready=false; }

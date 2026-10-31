@@ -36,7 +36,12 @@ At the bottom of the panel, type a song name and its BPM:
 - **UPDATE CURRENT** renames, re-tempos and re-accents the song shown at the top.
 - **ACCENT 1** on the device face (next to OPEN PANEL) is the global switch, saved with the set: off, every song plays without accent whatever its clip says.
 
-Reorder or delete songs in Live (drag or delete the scene); the panel follows on its next rescan. Other time signatures: edit the clip in Live.
+To reorder or delete songs from the panel, stop playback and turn on **EDIT SETLIST**. Clicking a title then only selects it, without launching it:
+
+- **MOVE UP / MOVE DOWN** swaps the selected song with the previous or next song: their clips on every track, name, tempo, time signature and color. Empty scenes in between stay where they are.
+- **DELETE** removes the selected song's scene, with its clips on every track, like deleting the scene in Live. Press it twice within 4 seconds to confirm.
+
+Turn EDIT SETLIST off before the gig so titles launch songs again. Each edit is several steps in Live's undo history. You can still drag or delete scenes in Live; the panel follows on its next rescan. Other time signatures: edit the clip in Live.
 
 ## The click sound
 
@@ -67,6 +72,9 @@ The device synthesises a short sine blip modelled on the Pro Tools click, so no 
 | ADD SONG | Creates a scene + click clip from the name and BPM fields. |
 | ACCENT ON / NO ACCENT | Per-song accent used by ADD SONG and UPDATE CURRENT. |
 | UPDATE CURRENT | Writes the name, BPM and accent fields to the current song. |
+| EDIT SETLIST | Edit mode: titles select instead of launch; needs playback stopped. |
+| MOVE UP / MOVE DOWN | In edit mode, moves the selected song one place. |
+| DELETE | In edit mode, press twice to delete the selected song. |
 | ACCENT 1 (device face) | Global accent on/off for every song. |
 
 For the first song, click its title or use START if the right song is already shown. The device never starts anything on load.
