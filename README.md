@@ -43,6 +43,18 @@ To reorder or delete songs from the panel, stop playback and turn on **EDIT SETL
 
 Turn EDIT SETLIST off before the gig so titles launch songs again. Each edit is several steps in Live's undo history. You can still drag or delete scenes in Live; the panel follows on its next rescan. Other time signatures: edit the clip in Live.
 
+## Songs with tempo or time signature changes
+
+Split the song into parts, one scene per part, and let Live chain them:
+
+1. The song's first scene is a normal song (name, tempo, click clip). Right below it, add one scene per following part, named with a leading `+`, e.g. `+Bridge`. With the song shown at the top of the panel, typing `+Bridge` and its BPM then ADD SONG creates that scene with its tempo and a one-bar click clip, after the song's last part.
+2. Give each part scene its tempo and, if it changes, its time signature in Live's scene settings. Edit its click clip to match (signature, length, notes).
+3. Set a scene Follow Action (Live 11 or later) on every scene of the song except its last part: **Next**, after the length of that part. The last part keeps Follow Actions off, so the song stops there instead of running into the next song.
+
+Every part needs its own clip on the click track: a scene launch stops the track's clip when its slot is empty, and the panel follows the click track.
+
+On the panel, a song with parts is one line (`3 parts`). While it plays, the status shows `PART 2 of 3: Bridge` and the BPM follows Live. START, NEXT, PREVIOUS and the titles launch songs from their first part. In edit mode, MOVE and DELETE act on the song with all its parts. UPDATE CURRENT edits only the song's first scene; edit parts in Live. A `+` scene that does not sit right below a song or its parts (e.g. after an empty scene) is ignored.
+
 ## The click sound
 
 The device synthesises a short sine blip modelled on the Pro Tools click, so no sample file (and no Avid sound) is needed. It plays on the clips' notes: C1 = accent (1760 Hz), any other note = beat (1320 Hz), so existing click clips keep sounding. To retune, edit the `cycle~` frequency or the decay length (`1, 0 60` = 60 ms) in the top patcher in `Debarulers-Stage-Manager.maxpat`, then rebuild.
@@ -52,7 +64,7 @@ The device synthesises a short sine blip modelled on the Pro Tools click, so no 
 - Keep your existing click track and looped MIDI clips.
 - One scene per song, with its name and its BPM enabled in the scene settings.
 - Only scenes with a clip on the click track are in the setlist: empty scenes (like Live's default ones) are hidden.
-- Disable Follow Actions on clips and scenes to keep transitions manual.
+- Disable Follow Actions on clips, and on scenes except between the parts of a song (see above), to keep song changes manual.
 - Set clips to Trigger mode, Loop on and Legato off so they restart from the beginning.
 - The panel respects Live's and the clips' launch quantization. During playback a launch may wait for the next bar; the screen shows PENDING. It does not impose a different quantization.
 - Do not arm other tracks; a scene launch fires all its clips, just like Live's scene button. The device targets your click set, not a recording session.

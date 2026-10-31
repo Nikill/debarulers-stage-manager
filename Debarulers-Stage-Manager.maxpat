@@ -1181,7 +1181,7 @@
                     990,
                     25
                   ],
-                  "text": "Type a name and BPM, pick the accent: ADD SONG appends a song with a 1-bar click clip, UPDATE CURRENT rewrites the shown song.",
+                  "text": "Type a name and BPM, pick the accent: ADD SONG appends a song (+name adds a part to the shown song), UPDATE CURRENT rewrites it.",
                   "presentation": 1,
                   "presentation_rect": [
                     28,

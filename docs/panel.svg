@@ -39,7 +39,7 @@
 <text x="32" y="685.6" font-size="14" fill="rgb(140,161,181)">Tracking: Click</text>
 <rect x="830" y="666" width="202" height="30" rx="10" fill="rgb(41,51,69)"/>
 <text x="931" y="681" font-size="13" fill="rgb(255,255,255)" text-anchor="middle" dominant-baseline="central">REFRESH</text>
-<text x="32" y="729.6" font-size="14" fill="rgb(140,161,181)">Type a name and BPM, pick the accent: ADD SONG appends a song with a 1-bar click clip, UPDATE CURRENT rewrites the shown song.</text>
+<text x="32" y="729.6" font-size="14" fill="rgb(140,161,181)">Type a name and BPM, pick the accent: ADD SONG appends a song (+name adds a part to the shown song), UPDATE CURRENT rewrites it.</text>
 <text x="32" y="775.6" font-size="14" fill="rgb(140,161,181)">NEW SONG</text>
 <rect x="140" y="752" width="310" height="38" fill="rgb(28,33,43)"/>
 <text x="144" y="772.2" font-size="18" fill="rgb(255,255,255)">Paper Kites</text>

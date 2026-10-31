@@ -45,12 +45,17 @@ function scan() {
     var list=ids(song.get('scenes')), fresh=[], slots=ids(track.get('clip_slots'));
     for(var i=0;i<list.length;i++) {
         reader.id=list[i];
-        var n=String(scalar(reader,'name') || ('Scene '+(i+1))), bpm=-1;
+        var n=String(scalar(reader,'name') || ('Scene '+(i+1))), bpm=-1, last=fresh[fresh.length-1];
         try { bpm=Number(scalar(reader,'tempo')); } catch(e) {}
+        // A scene named '+...' right below a song (or its parts) is a part of that song, not a song of its own.
+        if(n.charAt(0)==='+') {
+            if(last && lastIndex(last)===i-1) last.parts.push({id:list[i],index:i,name:partName(n)});
+            continue;
+        }
         // Only scenes with a clip on the click track are songs; empty scenes stay out of the setlist.
         if(!slots[i]) continue;
         reader.id=slots[i];
-        if(Number(scalar(reader,'has_clip'))===1) fresh.push({id:list[i],index:i,name:n,bpm:bpm});
+        if(Number(scalar(reader,'has_clip'))===1) fresh.push({id:list[i],index:i,name:n,bpm:bpm,parts:[]});
     }
     scenes=fresh;
     if(at(currentId)<0) {
@@ -61,6 +66,16 @@ function scan() {
     page=Math.min(page,Math.max(0,Math.ceil(scenes.length/ROWS)-1));
     render();
 }
+function partName(n) { return n.slice(1).trim() || 'Part'; }
+function lastIndex(s) { return s.parts.length ? s.parts[s.parts.length-1].index : s.index; }
+// Song and part (0 = the song's own scene) playing in scene slot i, or null.
+function playingAt(i) {
+    for(var k=0;k<scenes.length;k++) {
+        if(scenes[k].index===i) return {song:k,part:0};
+        for(var q=0;q<scenes[k].parts.length;q++) if(scenes[k].parts[q].index===i) return {song:k,part:q+1};
+    }
+    return null;
+}
 function refresh() { try { if(!ready) init(); else scan(); } catch(e) { announce('Refresh failed: '+e.message); } }
 function poll() {
     if(!ready) return;
@@ -68,9 +83,9 @@ function poll() {
         if(++tick%8===0) scan();
         var playing=Number(scalar(song,'is_playing'))===1;
         var slot=Number(scalar(track,'playing_slot_index'));
-        var live=-1; for(var k=0;k<scenes.length;k++) if(scenes[k].index===slot) live=k;
-        if(playing && live>=0) {
-            currentId=scenes[live].id;
+        var live=playingAt(slot);
+        if(playing && live) {
+            currentId=scenes[live.song].id;
             if(currentId===pendingId) pendingId=0;
         }
         if(pendingId && Date.now()-pendingAt>15000) { pendingId=0; announce('Launch not confirmed - check the click track'); }
@@ -86,11 +101,12 @@ function render() {
     ui('bpm',playing && slot>=0 ? String(Math.round(Number(scalar(song,'tempo'))*100)/100) : bpmText(current));
     ui('position',ci>=0 ? ('SONG '+(ci+1)+' / '+scenes.length) : 'SETLIST');
     ui('nexttitle',ci>=0 && ci+1<scenes.length ? 'Next: '+scenes[ci+1].name : 'End of setlist');
-    if(Date.now()>noteUntil) ui('status',pi>=0 ? 'PENDING: '+scenes[pi].name : (playing && slot>=0?'PLAYING':editMode?'EDIT SETLIST: click a title, then MOVE UP / MOVE DOWN / DELETE':'STOPPED'));
+    var live=playing ? playingAt(slot) : null;
+    if(Date.now()>noteUntil) ui('status',pi>=0 ? 'PENDING: '+scenes[pi].name : live && current && current.parts.length ? 'PLAYING  /  PART '+(live.part+1)+' of '+(current.parts.length+1)+(live.part?': '+current.parts[live.part-1].name:'') : (playing && slot>=0?'PLAYING':editMode?'EDIT SETLIST: click a title, then MOVE UP / MOVE DOWN / DELETE':'STOPPED'));
     ui('page','SETLIST  /  '+(page+1)+' of '+Math.max(1,Math.ceil(scenes.length/ROWS)));
     for(var r=0;r<ROWS;r++) {
         var s=scenes[page*ROWS+r];
-        button('row'+r,s ? ((s.id===currentId?' > ':'   ')+(page*ROWS+r+1)+'. '+s.name+'   /   '+bpmText(s)) : '');
+        button('row'+r,s ? ((s.id===currentId?' > ':'   ')+(page*ROWS+r+1)+'. '+s.name+'   /   '+bpmText(s)+(s.parts.length?'   /   '+(s.parts.length+1)+' parts':'')) : '');
     }
     ui('trackname',ready?'Tracking: '+String(scalar(track,'name')):'');
 }
@@ -144,8 +160,11 @@ function writeScene(id) {
 function add() {
     if(!entryOk()) return;
     try {
-        // Insert right after the last song, so the setlist stays at the top and empty scenes below.
-        var i=scenes.length ? scenes[scenes.length-1].index+1 : 0;
+        // A name starting with '+' adds a part at the end of the current song.
+        var part=newName.charAt(0)==='+', host=scenes[at(currentId)];
+        if(part && !host) { announce('Pick the song to add the part to'); return; }
+        // Insert right after the last song (or the current song's last part), so the setlist stays at the top and empty scenes below.
+        var i=part ? lastIndex(host)+1 : scenes.length ? lastIndex(scenes[scenes.length-1])+1 : 0;
         song.call('create_scene',i);
         writeScene(ids(song.get('scenes'))[i]);
         // One looped 4/4 bar: plain beats on 2-4, beat 1 set by downbeats().
@@ -158,8 +177,8 @@ function add() {
             {pitch:BEAT,start_time:2,duration:0.25,velocity:100},
             {pitch:BEAT,start_time:3,duration:0.25,velocity:100}]});
         downbeats(reader.id);
-        scan(); page=Math.floor((scenes.length-1)/ROWS);
-        announce('Added: '+newName+' / '+newBpm+' BPM'+(newAccent?'':' / no accent'));
+        scan(); if(!part) page=Math.floor((scenes.length-1)/ROWS);
+        announce((part?'Added part to '+host.name+': ':'Added: ')+newName+' / '+newBpm+' BPM'+(newAccent?'':' / no accent'));
     } catch(e) { announce('Add failed: '+e.message); scan(); }
 }
 // Rewrites the click note on beat 1 of every 4/4 bar: C1 (accent) or C#1 (plain). Other notes are left alone.
@@ -176,6 +195,7 @@ function update() {
     if(!entryOk()) return;
     var s=scenes[at(currentId)];
     if(!s) { announce('No current song'); return; }
+    if(newName.charAt(0)==='+') { announce('UPDATE CURRENT edits the song itself: edit its parts in Live'); return; }
     try {
         writeScene(s.id);
         reader.id=ids(track.get('clip_slots'))[s.index];
@@ -204,43 +224,51 @@ function moveClip(from,to) {
     if(Number(scalar(reader,'has_clip'))===1) reader.call('delete_clip');
 }
 var SCENE_PROPS=['name','color','tempo','time_signature_numerator','time_signature_denominator','tempo_enabled','time_signature_enabled'];
-// Live has no API to move a scene: swap the two scenes' clips on every track, through a temporary last scene, then their settings.
-function swap(a,b) {
-    var tmp=ids(song.get('scenes')).length, t=new LiveAPI(null,'live_set');
-    song.call('create_scene',-1);
+// Live has no API to move a scene: rewrite rows start.. so that row start+r gets the content of scene row order[r].
+// Clips move on every track through temporary scenes added at the end; scene settings are copied over. Unchanged rows are skipped.
+function permute(start,order) {
+    var n=order.length, base=ids(song.get('scenes')).length, t=new LiveAPI(null,'live_set'), r, k, p;
+    for(r=0;r<n;r++) song.call('create_scene',-1);
     try {
         var tracks=ids(song.get('tracks'));
-        for(var k=0;k<tracks.length;k++) {
+        for(k=0;k<tracks.length;k++) {
             t.id=tracks[k];
             var slots=ids(t.get('clip_slots'));
-            if(slots.length<=tmp) continue;
-            moveClip(slots[a.index],slots[tmp]); moveClip(slots[b.index],slots[a.index]); moveClip(slots[tmp],slots[b.index]);
+            if(slots.length<base+n) continue;
+            for(r=0;r<n;r++) if(order[r]!==start+r) moveClip(slots[start+r],slots[base+r]);
+            for(r=0;r<n;r++) if(order[r]!==start+r) moveClip(slots[base+order[r]-start],slots[start+r]);
         }
-        var va={}, vb={}, p;
-        for(p=0;p<SCENE_PROPS.length;p++) {
-            try { reader.id=a.id; va[SCENE_PROPS[p]]=scalar(reader,SCENE_PROPS[p]); reader.id=b.id; vb[SCENE_PROPS[p]]=scalar(reader,SCENE_PROPS[p]); } catch(e) {}
+        var list=ids(song.get('scenes')), saved=[];
+        for(r=0;r<n;r++) {
+            saved.push({}); reader.id=list[start+r];
+            for(p=0;p<SCENE_PROPS.length;p++) try { saved[r][SCENE_PROPS[p]]=scalar(reader,SCENE_PROPS[p]); } catch(e) {}
         }
         // Some properties are missing in Live 11 or refuse -1 (no tempo): skip those, the enabled flags follow.
-        for(p=0;p<SCENE_PROPS.length;p++) {
-            if(!(SCENE_PROPS[p] in va)) continue;
-            try { reader.id=a.id; reader.set(SCENE_PROPS[p],vb[SCENE_PROPS[p]]); } catch(e) {}
-            try { reader.id=b.id; reader.set(SCENE_PROPS[p],va[SCENE_PROPS[p]]); } catch(e) {}
+        for(r=0;r<n;r++) {
+            if(order[r]===start+r) continue;
+            reader.id=list[start+r];
+            for(p=0;p<SCENE_PROPS.length;p++) if(SCENE_PROPS[p] in saved[order[r]-start]) try { reader.set(SCENE_PROPS[p],saved[order[r]-start][SCENE_PROPS[p]]); } catch(e) {}
         }
-    } finally { song.call('delete_scene',tmp); }
+    } finally { for(r=n-1;r>=0;r--) song.call('delete_scene',base+r); }
 }
+function range(a,b) { var r=[]; for(var i=a;i<=b;i++) r.push(i); return r; }
 function move(step) {
     var s=editOk(); if(!s) return;
     var i=at(s.id), j=i+step;
     if(j<0 || j>=scenes.length) { announce(j<0?'Already first':'Already last'); return; }
     try {
-        swap(s,scenes[j]);
-        currentId=scenes[j].id; scan(); page=Math.floor(j/ROWS); render();
+        // Swap the two songs as whole blocks (song + parts); empty scenes between them stay between them.
+        var lo=scenes[Math.min(i,j)], hi=scenes[Math.max(i,j)], gap=range(lastIndex(lo)+1,hi.index-1);
+        var order=range(hi.index,lastIndex(hi)).concat(gap,range(lo.index,lastIndex(lo)));
+        permute(lo.index,order);
+        var row=step<0 ? lo.index : lo.index+order.length-(lastIndex(lo)-lo.index+1);
+        currentId=ids(song.get('scenes'))[row]; scan(); page=Math.floor(j/ROWS); render();
         announce('Moved: '+s.name+' to position '+(j+1));
     } catch(e) { announce('Move failed: '+e.message); scan(); }
 }
 function moveup() { move(-1); }
 function movedown() { move(1); }
-// DELETE removes the whole scene (every track's clip in it), so it asks for a second press within 4 s.
+// DELETE removes the song's scene and its parts (every track's clip in them), so it asks for a second press within 4 s.
 function remove() {
     var s=editOk(); if(!s) return;
     if(deleteId!==s.id || Date.now()-deleteAt>4000) {
@@ -250,7 +278,7 @@ function remove() {
     deleteId=0;
     try {
         var i=at(s.id), keep=scenes[i+1]||scenes[i-1];
-        song.call('delete_scene',s.index);
+        for(var d=lastIndex(s);d>=s.index;d--) song.call('delete_scene',d);
         currentId=keep?keep.id:0; scan();
         announce('Deleted: '+s.name);
     } catch(e) { announce('Delete failed: '+e.message); scan(); }

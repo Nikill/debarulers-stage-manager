@@ -89,6 +89,28 @@ e.remove();assert(ui2.status.includes('again'));assert.equal(m.scenes.length,4);
 e.choose(2);e.remove();assert.equal(m.scenes.length,4);e.remove();assert.deepEqual(names(),['B','D','Gap']);assert.equal(row(5),'B,,x');
 assert.deepEqual(e.scenes.map(s=>s.name),['B','D']);assert.equal(e.scenes[e.at(e.currentId)].name,'D');
 e.editmode(0);e.lastPress=0;e.choose(0);assert.equal(m.playing,1);// edit off: titles launch again
+// Song parts: '+' scenes right below a song belong to it; after an empty scene, a '+' scene is an orphan and ignored.
+m={scenes:[sc(60,'A',120),sc(61,'+A2',150),sc(62,'+ A3',140),sc(63,'B',100),sc(64,'Gap',-1),sc(65,'+orphan',-1),sc(66,'C',90)],
+ clips:{2:['a','a2','a3','b',null,null,'c'],5:['A','A2',null,'B','x',null,'C']},playing:0,slot:-1,next:70,calls:[]};
+e.init();assert.deepEqual(e.scenes.map(s=>s.name),['A','B','C']);assert.deepEqual(e.scenes[0].parts.map(q=>q.name),['A2','A3']);
+// Playing a part (e.g. reached by a scene Follow Action) keeps its song current and shows which part.
+m.playing=1;m.slot=2;e.currentId=63;e.pendingId=0;e.noteUntil=0;e.poll();assert.equal(e.currentId,60);assert(ui2.status.includes('PART 3 of 3: A3'));assert(ui2.row0.includes('3 parts'));
+e.lastPress=0;e.next();assert.equal(m.slot,3);e.poll();assert.equal(e.currentId,63);// NEXT skips the parts
+e.stop();m.playing=0;e.pendingId=0;e.editmode(1);
+// Moves carry the whole block (song + parts) on every track, with scene settings; the gap stays between songs.
+e.choose(0);e.movedown();assert.deepEqual(names(),['B','A','+A2','+ A3','Gap','+orphan','C']);
+assert.equal(row(2),'b,a,a2,a3,,,c');assert.equal(row(5),'B,A,A2,,x,,C');assert.deepEqual(m.scenes.map(s=>s.tempo),[100,120,150,140,-1,-1,90]);
+assert.equal(m.scenes.length,7);assert.equal(e.scenes[e.at(e.currentId)].name,'A');assert.equal(e.scenes[1].parts.length,2);
+e.moveup();assert.deepEqual(names(),['A','+A2','+ A3','B','Gap','+orphan','C']);assert.equal(row(5),'A,A2,,B,x,,C');assert.equal(e.at(e.currentId),0);
+e.choose(1);e.movedown();assert.deepEqual(names(),['A','+A2','+ A3','C','Gap','+orphan','B']);assert.equal(row(2),'a,a2,a3,c,,,b');
+// DELETE removes the song with its parts.
+e.choose(0);e.remove();e.remove();assert.deepEqual(names(),['C','Gap','+orphan','B']);assert.equal(row(5),'C,x,,B');assert.deepEqual(e.scenes.map(s=>s.name),['C','B']);
+// ADD SONG with a '+' name adds a part at the end of the current song; UPDATE CURRENT refuses it.
+model.playing=0;c.scan();c.currentId=c.scenes[0].id;const songs=c.scenes.length,after=c.scenes[0].index+1;
+c.text('+Bridge');c.bpm(160);c.add();assert.equal(model.scenes[after].name,'+Bridge');assert.equal(model.scenes[after].bpm,160);assert.equal(model.scenes[after].has,1);
+assert.equal(c.scenes.length,songs);assert.deepEqual(c.scenes[0].parts.map(q=>q.name),['Bridge']);assert(ui.status.includes('part'));
+c.text('+Outro');c.bpm(90);c.add();assert.deepEqual(c.scenes[0].parts.map(q=>q.name),['Bridge','Outro']);assert.equal(model.scenes[after+1].name,'+Outro');
+c.text('+X');c.update();assert(ui.status.includes('edit its parts in Live'));
 const p=JSON.parse(fs.readFileSync(__dirname+'/Debarulers-Stage-Manager.maxpat'));
 function validate(p){const ids=new Set(p.boxes.map(b=>b.box.id));for(const l of p.lines){assert(ids.has(l.patchline.source[0]));assert(ids.has(l.patchline.destination[0]));}for(const b of p.boxes)if(b.box.patcher)validate(b.box.patcher);}
 validate(p.patcher);
@@ -103,4 +125,4 @@ for(const [b,c,t] of [['moveup','moveupcmd','moveup'],['movedown','movedowncmd',
 const {pack,unpack,NAME}=require('./build_amxd.cjs'),js=fs.readFileSync(__dirname+'/stage_click.js'),amxd=pack(p,{'stage_click.js':js}),back=unpack(amxd);
 assert.equal(amxd.toString('latin1',8,12),'iiii');assert.deepEqual(Object.keys(back),[NAME,'stage_click.js']);assert(back['stage_click.js'].equals(js));
 const dev=JSON.parse(back[NAME].toString('utf8').replace(/\0$/,''));assert.equal(dev.patcher.project.amxdtype,0x69696969);assert.deepEqual(dev.patcher.boxes,p.patcher.boxes);
-console.log('PASS: start, stop, next/previous, empty scenes hidden, boundaries, external launch, cancellation, reorder, setlist add/update, per-song accent, edit mode move/delete, click synth wiring, patch wiring, frozen amxd packing. Live/Max runtime still untested.');
+console.log('PASS: start, stop, next/previous, empty scenes hidden, boundaries, external launch, cancellation, reorder, setlist add/update, per-song accent, edit mode move/delete, song parts, click synth wiring, patch wiring, frozen amxd packing. Live/Max runtime still untested.');
